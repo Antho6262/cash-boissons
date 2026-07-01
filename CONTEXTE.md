@@ -1,6 +1,6 @@
 # CONTEXTE PROJET — Site Cash Boissons
 
-Dernière mise à jour : catégories de produits gérables soi-même (ajout/suppression) dans l'espace pro, nouvel onglet "Catégories"
+Dernière mise à jour : horaires d'ouverture ajoutés sur les cartes magasins (Bruay, Loos, Auchy, Lambres, Cambrai)
 
 ## Fichiers du site (tous à la racine du repo, PAS de sous-dossier images)
 - index.html
@@ -36,6 +36,10 @@ Dernière mise à jour : catégories de produits gérables soi-même (ajout/supp
 7. Noyelles-Godault — adresse à venir — noyellesgodault@cash-boissons.com — bientôt
 
 Mobiles : vides partout, à remplir dans l'espace pro (onglet "Coordonnées magasins").
+
+## Horaires (affichés sur les cartes magasins)
+Bruay, Loos-en-Gohelle, Auchy, Lambres-lez-Douai, Cambrai : du mardi au samedi, 9h30-12h30 et 14h-19h
+Avranches et Noyelles-Godault : pas d'horaires renseignés
 
 ## Catégories par défaut (modifiables/supprimables dans l'espace pro)
 Bières, Vins, Spiritueux, Softs / Eaux, Paniers garnis

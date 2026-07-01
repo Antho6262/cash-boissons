@@ -11,6 +11,7 @@ const DEFAULT_STORES = [
     phone: "03 21 68 57 28",
     mobile: "",
     email: "bruay@cash-boissons.com",
+    hours: "Du mardi au samedi : 9h30-12h30 et 14h-19h",
     status: "open"
   },
   {
@@ -21,6 +22,7 @@ const DEFAULT_STORES = [
     phone: "09 66 93 43 77",
     mobile: "",
     email: "loos@cash-boissons.com",
+    hours: "Du mardi au samedi : 9h30-12h30 et 14h-19h",
     status: "open"
   },
   {
@@ -31,6 +33,7 @@ const DEFAULT_STORES = [
     phone: "09 67 49 56 17",
     mobile: "",
     email: "auchy@cash-boissons.com",
+    hours: "Du mardi au samedi : 9h30-12h30 et 14h-19h",
     status: "open"
   },
   {
@@ -41,6 +44,7 @@ const DEFAULT_STORES = [
     phone: "09 67 40 20 39",
     mobile: "",
     email: "lambres@cash-boissons.com",
+    hours: "Du mardi au samedi : 9h30-12h30 et 14h-19h",
     status: "open"
   },
   {
@@ -51,6 +55,7 @@ const DEFAULT_STORES = [
     phone: "03 27 72 15 21",
     mobile: "",
     email: "cambrai@cash-boissons.com",
+    hours: "Du mardi au samedi : 9h30-12h30 et 14h-19h",
     status: "open"
   },
   {
@@ -61,6 +66,7 @@ const DEFAULT_STORES = [
     phone: "",
     mobile: "",
     email: "avranches@cash-boissons.com",
+    hours: "",
     status: "open"
   },
   {
@@ -71,6 +77,7 @@ const DEFAULT_STORES = [
     phone: "",
     mobile: "",
     email: "noyellesgodault@cash-boissons.com",
+    hours: "",
     status: "soon"
   }
 ];
@@ -162,6 +169,7 @@ function renderStores(){
       <h3 class="store-city">${s.city}</h3>
       <p class="store-dept">${s.dept}</p>
       <div class="store-row"><span class="ic">📍</span><span>${s.address}</span></div>
+      ${s.hours ? `<div class="store-row"><span class="ic">🕐</span><span>${s.hours}</span></div>` : ''}
       ${s.phone ? `<div class="store-row"><span class="ic">☎</span><a href="tel:${s.phone.replace(/\s/g,'')}">${s.phone}</a></div>` : `<div class="store-row store-empty"><span class="ic">☎</span><span>Fixe à venir</span></div>`}
       ${s.mobile ? `<div class="store-row"><span class="ic">📱</span><a href="tel:${s.mobile.replace(/\s/g,'')}">${s.mobile}</a></div>` : `<div class="store-row store-empty"><span class="ic">📱</span><span>Mobile à venir</span></div>`}
       <div class="store-row"><span class="ic">✉</span><a href="mailto:${s.email}">${s.email}</a></div>
