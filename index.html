@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cash Boissons — Grossiste boissons Hauts-de-France & Normandie</title>
+<link rel="icon" href="images/logo-mark.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- décor : capsules -->
+<div class="cap-field" aria-hidden="true"></div>
+
+<header class="topbar" id="topbar">
+  <div class="wrap topbar-inner">
+    <a href="#top" class="brand">
+      <img src="images/logo-full.png" alt="Cash Boissons" class="brand-logo">
+    </a>
+    <nav class="nav" id="mainNav">
+      <a href="#magasins">Nos magasins</a>
+      <a href="#catalogue">Catalogue</a>
+      <a href="#carte">Carte</a>
+      <a href="#admin" class="nav-admin">Espace pro</a>
+    </nav>
+    <button class="burger" id="burgerBtn" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap hero-inner">
+      <p class="eyebrow">Grossiste — Cash & Carry — Depuis les Hauts-de-France</p>
+      <h1 class="hero-title">
+        LE PLEIN DE<br>
+        <span class="stroke">BOISSONS</span><br>
+        AU MEILLEUR PRIX
+      </h1>
+      <p class="hero-sub">7 magasins, une seule promesse&nbsp;: le plus grand choix de bières, vins, spiritueux et softs, en gros comme au détail.</p>
+      <div class="hero-cta">
+        <a href="#magasins" class="btn btn-yellow">Trouver mon magasin</a>
+        <a href="#catalogue" class="btn btn-ghost">Voir le catalogue</a>
+      </div>
+    </div>
+    <div class="hero-mark" aria-hidden="true">
+      <img src="images/logo-mark.png" alt="">
+    </div>
+  </section>
+
+  <!-- BANDEAU CHIFFRES -->
+  <section class="stats">
+    <div class="wrap stats-inner">
+      <div class="stat"><span class="stat-num">07</span><span class="stat-label">Magasins<br>dans le Nord & la Manche</span></div>
+      <div class="stat"><span class="stat-num">6j/7</span><span class="stat-label">Ouverts du mardi<br>au samedi</span></div>
+      <div class="stat"><span class="stat-num">+1</span><span class="stat-label">Nouveau magasin<br>à Noyelles-Godault</span></div>
+    </div>
+  </section>
+
+  <!-- MAGASINS -->
+  <section id="magasins" class="section magasins">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="tag">01 — Nos adresses</span>
+        <h2>Un magasin près de chez vous</h2>
+      </div>
+      <div class="store-grid" id="storeGrid"><!-- injecté en JS --></div>
+    </div>
+  </section>
+
+  <!-- CARTE -->
+  <section id="carte" class="section carte">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="tag">02 — Localisation</span>
+        <h2>Tous nos magasins sur la carte</h2>
+      </div>
+      <div class="map-links" id="mapLinks"></div>
+    </div>
+  </section>
+
+  <!-- CATALOGUE -->
+  <section id="catalogue" class="section catalogue">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="tag">03 — Produits</span>
+        <h2>Le catalogue</h2>
+        <p class="section-desc">Bières, vins, spiritueux, softs... la sélection mise en avant par nos magasins.</p>
+      </div>
+
+      <div class="catalogue-filters">
+        <select id="filterStore">
+          <option value="all">Tous les magasins</option>
+        </select>
+        <select id="filterCat">
+          <option value="all">Toutes les catégories</option>
+          <option value="Bières">Bières</option>
+          <option value="Vins">Vins</option>
+          <option value="Spiritueux">Spiritueux</option>
+          <option value="Softs">Softs / Eaux</option>
+          <option value="Paniers">Paniers garnis</option>
+        </select>
+      </div>
+
+      <div class="product-grid" id="productGrid"></div>
+      <p class="empty-state" id="catalogueEmpty">Aucun produit publié pour le moment. Rendez-vous dans l'espace pro pour créer le catalogue.</p>
+    </div>
+  </section>
+
+  <!-- ADMIN -->
+  <section id="admin" class="section admin">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="tag">04 — Réservé aux équipes</span>
+        <h2>Espace pro</h2>
+      </div>
+
+      <!-- LOGIN -->
+      <div id="adminLogin" class="admin-login">
+        <p>Cet espace permet de gérer le catalogue produits et les coordonnées des magasins.</p>
+        <form id="loginForm" class="login-form">
+          <input type="password" id="adminPass" placeholder="Mot de passe administrateur" required>
+          <button type="submit" class="btn btn-yellow">Se connecter</button>
+        </form>
+        <p class="login-hint">Mot de passe par défaut&nbsp;: <code>cashboissons62</code> — à changer dans script.js</p>
+      </div>
+
+      <!-- PANEL -->
+      <div id="adminPanel" class="admin-panel hidden">
+        <div class="admin-topline">
+          <p class="admin-welcome">Connecté à l'espace pro</p>
+          <button id="logoutBtn" class="btn btn-outline-sm">Se déconnecter</button>
+        </div>
+
+        <div class="admin-tabs">
+          <button class="tab-btn active" data-tab="tab-produits">Catalogue produits</button>
+          <button class="tab-btn" data-tab="tab-magasins">Coordonnées magasins</button>
+        </div>
+
+        <!-- TAB PRODUITS -->
+        <div id="tab-produits" class="admin-tab active">
+          <form id="productForm" class="product-form">
+            <div class="form-row">
+              <label>Nom du produit
+                <input type="text" id="pName" required placeholder="Ex : Bière Kwak 33cl">
+              </label>
+              <label>Prix (€)
+                <input type="number" id="pPrice" step="0.01" min="0" required placeholder="Ex : 2.50">
+              </label>
+            </div>
+            <div class="form-row">
+              <label>Catégorie
+                <select id="pCat" required>
+                  <option value="Bières">Bières</option>
+                  <option value="Vins">Vins</option>
+                  <option value="Spiritueux">Spiritueux</option>
+                  <option value="Softs">Softs / Eaux</option>
+                  <option value="Paniers">Paniers garnis</option>
+                </select>
+              </label>
+              <label>Magasin
+                <select id="pStore" required></select>
+              </label>
+            </div>
+            <div class="form-row">
+              <label class="full">Photo du produit
+                <input type="file" id="pImage" accept="image/*">
+              </label>
+            </div>
+            <div class="form-row">
+              <button type="submit" class="btn btn-yellow">Ajouter au catalogue</button>
+              <button type="button" id="cancelEdit" class="btn btn-outline-sm hidden">Annuler la modification</button>
+            </div>
+          </form>
+
+          <div class="admin-list" id="adminProductList"></div>
+        </div>
+
+        <!-- TAB MAGASINS -->
+        <div id="tab-magasins" class="admin-tab">
+          <p class="section-desc">Complétez les mobiles ou corrigez un e-mail si besoin — les fixes et adresses viennent des fiches officielles des magasins.</p>
+          <div class="admin-store-list" id="adminStoreList"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <img src="images/logo-full.png" alt="Cash Boissons" class="footer-logo">
+    <p class="footer-legal">L'abus d'alcool est dangereux pour la santé. À consommer avec modération. Vente d'alcool interdite aux mineurs de moins de 18 ans.</p>
+    <p class="footer-copy">© Cash Boissons — Grossiste boissons, Hauts-de-France & Normandie</p>
+  </div>
+</footer>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
