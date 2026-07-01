@@ -149,10 +149,38 @@ function renderStores(){
 /* ============ CATALOGUE (public) ============ */
 function fillStoreFilters(){
   const filterStore = document.getElementById("filterStore");
-  const pStore = document.getElementById("pStore");
+  const checksBox = document.getElementById("pStoreChecks");
   const opts = stores.map(s => `<option value="${s.id}">${s.city}</option>`).join("");
   filterStore.innerHTML = `<option value="all">Tous les magasins</option>` + opts;
-  pStore.innerHTML = opts;
+
+  checksBox.innerHTML = `
+    <label class="store-check all">
+      <input type="checkbox" id="pStoreAll"> Tous les magasins
+    </label>
+    ${stores.map(s => `
+      <label class="store-check">
+        <input type="checkbox" class="pStoreOne" value="${s.id}"> ${s.city}
+      </label>
+    `).join("")}
+  `;
+
+  document.getElementById("pStoreAll").addEventListener("change", e => {
+    document.querySelectorAll(".pStoreOne").forEach(cb => cb.checked = e.target.checked);
+  });
+  document.querySelectorAll(".pStoreOne").forEach(cb => {
+    cb.addEventListener("change", () => {
+      const all = document.querySelectorAll(".pStoreOne");
+      document.getElementById("pStoreAll").checked = Array.from(all).every(c => c.checked);
+    });
+  });
+}
+
+function getSelectedStores(){
+  return Array.from(document.querySelectorAll(".pStoreOne:checked")).map(cb => cb.value);
+}
+function setSelectedStores(ids){
+  document.querySelectorAll(".pStoreOne").forEach(cb => cb.checked = ids.includes(cb.value));
+  document.getElementById("pStoreAll").checked = ids.length === stores.length;
 }
 
 function renderProducts(){
@@ -162,7 +190,7 @@ function renderProducts(){
   const fCat = document.getElementById("filterCat").value;
 
   const filtered = products.filter(p =>
-    (fStore === "all" || p.store === fStore) &&
+    (fStore === "all" || (p.stores || []).includes(fStore)) &&
     (fCat === "all" || p.cat === fCat)
   );
 
@@ -174,14 +202,14 @@ function renderProducts(){
   empty.classList.add("hidden");
 
   grid.innerHTML = filtered.map(p => {
-    const storeName = stores.find(s => s.id === p.store)?.city || "";
+    const storeNames = (p.stores || []).map(id => stores.find(s => s.id === id)?.city).filter(Boolean).join(", ");
     return `
       <article class="product-card">
         <img class="product-img" src="${p.image || placeholderImg()}" alt="${p.name}">
         <div class="product-body">
           <span class="product-cat">${p.cat}</span>
           <p class="product-name">${p.name}</p>
-          <p class="product-store">${storeName}</p>
+          <p class="product-store">${storeNames}</p>
           <p class="product-price">${Number(p.price).toFixed(2)} €</p>
         </div>
       </article>
@@ -251,13 +279,13 @@ function renderAdminProducts(){
     return;
   }
   list.innerHTML = products.map(p => {
-    const storeName = stores.find(s => s.id === p.store)?.city || "";
+    const storeNames = (p.stores || []).map(id => stores.find(s => s.id === id)?.city).filter(Boolean).join(", ");
     return `
       <div class="admin-list-item">
         <img src="${p.image || placeholderImg()}" alt="">
         <div class="admin-list-info">
           <strong>${p.name} — ${Number(p.price).toFixed(2)} €</strong>
-          <span>${p.cat} · ${storeName}</span>
+          <span>${p.cat} · ${storeNames}</span>
         </div>
         <div class="admin-list-actions">
           <button class="icon-btn" title="Modifier" onclick="editProduct('${p.id}')">✎</button>
@@ -277,11 +305,16 @@ function initProductForm(){
     const name = document.getElementById("pName").value.trim();
     const price = document.getElementById("pPrice").value;
     const cat = document.getElementById("pCat").value;
-    const store = document.getElementById("pStore").value;
+    const storesSelected = getSelectedStores();
     const fileInput = document.getElementById("pImage");
 
+    if(storesSelected.length === 0){
+      alert("Sélectionne au moins un magasin.");
+      return;
+    }
+
     const commit = async (imageData) => {
-      const data = { name, price, cat, store };
+      const data = { name, price, cat, stores: storesSelected };
       if(imageData) data.image = imageData;
 
       if(editingProductId){
@@ -316,7 +349,7 @@ function editProduct(id){
   document.getElementById("pName").value = p.name;
   document.getElementById("pPrice").value = p.price;
   document.getElementById("pCat").value = p.cat;
-  document.getElementById("pStore").value = p.store;
+  setSelectedStores(p.stores || []);
   editingProductId = id;
   document.getElementById("cancelEdit").classList.remove("hidden");
   document.getElementById("tab-produits").scrollIntoView({behavior:"smooth", block:"start"});
