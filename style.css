@@ -50,7 +50,7 @@ a{color:inherit;text-decoration:none;}
   border-bottom:1px solid var(--navy-line);
 }
 .topbar-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;}
-.brand-logo{height:38px;width:auto;}
+.brand-logo{height:58px;width:auto;}
 .nav{display:flex;gap:28px;align-items:center;font-weight:600;font-size:.95rem;}
 .nav a{color:var(--cream);opacity:.85;transition:opacity .2s;}
 .nav a:hover{opacity:1;color:var(--yellow);}
@@ -239,6 +239,8 @@ a{color:inherit;text-decoration:none;}
 .store-check.all{border-color:var(--yellow-deep);color:var(--yellow);}
 
 .admin-list{display:flex;flex-direction:column;gap:10px;}
+.cat-add-row{display:flex;gap:10px;}
+.cat-add-row input{flex:1;}
 .admin-list-item{
   display:flex;align-items:center;gap:14px;background:var(--navy-800);border:1px solid var(--navy-line);
   border-radius:10px;padding:10px 14px;

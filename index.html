@@ -37,7 +37,7 @@
   <!-- HERO -->
   <section class="hero">
     <div class="wrap hero-inner">
-      <p class="eyebrow">Grossiste — Cash & Carry — Depuis les Hauts-de-France</p>
+      <p class="eyebrow">Cash Boissons — Grossiste boissons depuis les Hauts-de-France</p>
       <h1 class="hero-title">
         LE PLEIN DE<br>
         <span class="stroke">BOISSONS</span><br>
@@ -100,11 +100,6 @@
         </select>
         <select id="filterCat">
           <option value="all">Toutes les catégories</option>
-          <option value="Bières">Bières</option>
-          <option value="Vins">Vins</option>
-          <option value="Spiritueux">Spiritueux</option>
-          <option value="Softs">Softs / Eaux</option>
-          <option value="Paniers">Paniers garnis</option>
         </select>
       </div>
 
@@ -140,6 +135,7 @@
 
         <div class="admin-tabs">
           <button class="tab-btn active" data-tab="tab-produits">Catalogue produits</button>
+          <button class="tab-btn" data-tab="tab-categories">Catégories</button>
           <button class="tab-btn" data-tab="tab-magasins">Coordonnées magasins</button>
         </div>
 
@@ -156,13 +152,7 @@
             </div>
             <div class="form-row">
               <label>Catégorie
-                <select id="pCat" required>
-                  <option value="Bières">Bières</option>
-                  <option value="Vins">Vins</option>
-                  <option value="Spiritueux">Spiritueux</option>
-                  <option value="Softs">Softs / Eaux</option>
-                  <option value="Paniers">Paniers garnis</option>
-                </select>
+                <select id="pCat" required></select>
               </label>
             </div>
             <div class="form-row">
@@ -182,6 +172,19 @@
           </form>
 
           <div class="admin-list" id="adminProductList"></div>
+        </div>
+
+        <!-- TAB CATÉGORIES -->
+        <div id="tab-categories" class="admin-tab">
+          <form id="categoryForm" class="product-form category-form">
+            <label class="full">Nouvelle catégorie
+              <div class="cat-add-row">
+                <input type="text" id="catName" placeholder="Ex : Bières sans alcool" required>
+                <button type="submit" class="btn btn-yellow btn-small">Ajouter</button>
+              </div>
+            </label>
+          </form>
+          <div class="admin-list" id="adminCategoryList"></div>
         </div>
 
         <!-- TAB MAGASINS -->

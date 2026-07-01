@@ -75,6 +75,8 @@ const DEFAULT_STORES = [
   }
 ];
 
+const DEFAULT_CATEGORIES = ["Bières", "Vins", "Spiritueux", "Softs / Eaux", "Paniers garnis"];
+
 const ADMIN_PASSWORD = "cashboissons62"; // à personnaliser
 
 /* ============ FIREBASE ============ */
@@ -82,9 +84,11 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const storesCol = db.collection("stores");
 const productsCol = db.collection("products");
+const categoriesCol = db.collection("categories");
 
 let stores = structuredClone(DEFAULT_STORES);
 let products = [];
+let categories = [];
 let editingProductId = null;
 
 /* Premier lancement : on sème les magasins par défaut si la base est vide */
@@ -93,6 +97,14 @@ async function seedStoresIfEmpty(){
   if(snap.empty){
     const batch = db.batch();
     DEFAULT_STORES.forEach(s => batch.set(storesCol.doc(s.id), s));
+    await batch.commit();
+  }
+}
+async function seedCategoriesIfEmpty(){
+  const snap = await categoriesCol.get();
+  if(snap.empty){
+    const batch = db.batch();
+    DEFAULT_CATEGORIES.forEach(name => batch.set(categoriesCol.doc(), {name}));
     await batch.commit();
   }
 }
@@ -111,6 +123,18 @@ function listenProducts(cb){
     products = snap.docs.map(doc => ({id: doc.id, ...doc.data()}));
     cb();
   });
+}
+function listenCategories(cb){
+  categoriesCol.onSnapshot(snap => {
+    categories = snap.docs.map(doc => ({id: doc.id, ...doc.data()})).sort((a,b) => a.name.localeCompare(b.name));
+    cb();
+  });
+}
+async function addCategory(name){
+  await categoriesCol.add({name});
+}
+async function removeCategory(id){
+  await categoriesCol.doc(id).delete();
 }
 async function updateStoreField(id, field, value){
   await storesCol.doc(id).set({[field]: value}, {merge:true});
@@ -246,6 +270,7 @@ function initAdminAuth(){
       panel.classList.remove("hidden");
       renderAdminProducts();
       renderAdminStores();
+      renderAdminCategories();
     } else {
       alert("Mot de passe incorrect.");
     }
@@ -392,6 +417,55 @@ function renderMapLinks(){
   `).join("");
 }
 
+function fillCategorySelects(){
+  const filterCat = document.getElementById("filterCat");
+  const pCat = document.getElementById("pCat");
+  const prevFilter = filterCat.value;
+  const prevP = pCat.value;
+  const opts = categories.map(c => `<option value="${c.name}">${c.name}</option>`).join("");
+  filterCat.innerHTML = `<option value="all">Toutes les catégories</option>` + opts;
+  pCat.innerHTML = opts;
+  if(categories.some(c => c.name === prevFilter)) filterCat.value = prevFilter;
+  if(categories.some(c => c.name === prevP)) pCat.value = prevP;
+}
+
+function renderAdminCategories(){
+  const list = document.getElementById("adminCategoryList");
+  if(categories.length === 0){
+    list.innerHTML = `<p class="empty-state">Aucune catégorie pour le moment.</p>`;
+    return;
+  }
+  list.innerHTML = categories.map(c => `
+    <div class="admin-list-item">
+      <div class="admin-list-info"><strong>${c.name}</strong></div>
+      <div class="admin-list-actions">
+        <button class="icon-btn danger" title="Supprimer" onclick="onDeleteCategory('${c.id}')">✕</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+function onDeleteCategory(id){
+  if(!confirm("Supprimer cette catégorie ? Les produits déjà classés dedans garderont son nom.")) return;
+  removeCategory(id);
+}
+
+function initCategoryForm(){
+  const form = document.getElementById("categoryForm");
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+    const input = document.getElementById("catName");
+    const name = input.value.trim();
+    if(!name) return;
+    if(categories.some(c => c.name.toLowerCase() === name.toLowerCase())){
+      alert("Cette catégorie existe déjà.");
+      return;
+    }
+    await addCategory(name);
+    form.reset();
+  });
+}
+
 /* ============ NAV MOBILE ============ */
 function initNav(){
   const burger = document.getElementById("burgerBtn");
@@ -403,6 +477,7 @@ function initNav(){
 /* ============ INIT ============ */
 document.addEventListener("DOMContentLoaded", async () => {
   await seedStoresIfEmpty();
+  await seedCategoriesIfEmpty();
 
   listenStores(() => {
     renderStores();
@@ -421,9 +496,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
+  listenCategories(() => {
+    fillCategorySelects();
+    renderProducts();
+    if(document.getElementById("adminPanel").classList.contains("hidden") === false){
+      renderAdminCategories();
+    }
+  });
+
   initAdminAuth();
   initTabs();
   initProductForm();
+  initCategoryForm();
   initNav();
 
   document.getElementById("filterStore").addEventListener("change", renderProducts);
