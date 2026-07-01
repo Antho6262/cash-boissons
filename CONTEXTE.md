@@ -1,6 +1,6 @@
 # CONTEXTE PROJET — Site Cash Boissons
 
-Dernière mise à jour : système de promotions (case "en promotion" + prix promo par produit, badge + prix barré, section "Promotions" dédiée sur la page d'accueil, visible seulement s'il y a au moins une promo active)
+Dernière mise à jour : promotion sans prix possible — ajout d'un champ "Offre spéciale" en texte libre (ex : 3+1, 2 achetées = 1 verre offert), affiché en badge ; le prix promo reste facultatif et affiche un prix barré seulement s'il est renseigné
 
 ## Fichiers du site (tous à la racine du repo, PAS de sous-dossier images)
 - index.html
@@ -52,7 +52,7 @@ Bières, Vins, Spiritueux, Softs / Eaux, Paniers garnis
   - Catalogue produits : ajout/édition/suppression (nom, prix, catégorie, magasins concernés en multi-sélection avec "Tous les magasins", photo)
   - Catégories : ajout/suppression libre de catégories, utilisées dans le formulaire produit et le filtre catalogue
   - Coordonnées magasins : édition mobile + email par magasin
-- Système de promotions : dans le formulaire produit, case "En promotion" + prix promo → badge rouge et prix barré sur la carte produit, apparaît aussi dans une section "Promotions" dédiée en haut de page (masquée s'il n'y a aucune promo)
+- Système de promotions : case "En promotion" → deux champs facultatifs : prix promo (affiche prix barré) et/ou offre spéciale en texte libre type "3+1" (affichée en badge) ; visible dans le catalogue et dans une section "Promotions" dédiée en haut de page (masquée s'il n'y a aucune promo)
 - Données synchronisées en temps réel via Firestore (visible sur tous les appareils)
 - Logos jaunes intégrés (header agrandi, footer, watermark hero) — jamais sur fond blanc/noir
 

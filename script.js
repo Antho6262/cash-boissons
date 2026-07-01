@@ -238,13 +238,14 @@ function renderProducts(){
 
 function buildProductCard(p){
   const storeNames = (p.stores || []).map(id => stores.find(s => s.id === id)?.city).filter(Boolean).join(", ");
-  const isPromo = p.promo && p.promoPrice;
-  const priceHtml = isPromo
+  const hasPromoPrice = p.promo && p.promoPrice;
+  const hasPromoLabel = p.promo && p.promoLabel;
+  const priceHtml = hasPromoPrice
     ? `<span class="product-price-old">${Number(p.price).toFixed(2)} €</span><span class="product-price">${Number(p.promoPrice).toFixed(2)} €</span>`
     : `<span class="product-price">${Number(p.price).toFixed(2)} €</span>`;
   return `
     <article class="product-card">
-      ${isPromo ? `<span class="promo-badge">Promo</span>` : ''}
+      ${p.promo ? `<span class="promo-badge">${hasPromoLabel ? p.promoLabel : 'Promo'}</span>` : ''}
       <img class="product-img" src="${p.image || placeholderImg()}" alt="${p.name}">
       <div class="product-body">
         <span class="product-cat">${p.cat}</span>
@@ -259,7 +260,7 @@ function buildProductCard(p){
 function renderPromotions(){
   const section = document.getElementById("promotions");
   const grid = document.getElementById("promoGrid");
-  const promoProducts = products.filter(p => p.promo && p.promoPrice);
+  const promoProducts = products.filter(p => p.promo);
   if(promoProducts.length === 0){
     section.classList.add("hidden");
     grid.innerHTML = "";
@@ -354,7 +355,7 @@ function initProductForm(){
   const cancelBtn = document.getElementById("cancelEdit");
 
   document.getElementById("pPromo").addEventListener("change", e => {
-    document.getElementById("pPromoPriceWrap").classList.toggle("hidden", !e.target.checked);
+    document.getElementById("pPromoFields").classList.toggle("hidden", !e.target.checked);
   });
 
   form.addEventListener("submit", e => {
@@ -366,18 +367,24 @@ function initProductForm(){
     const fileInput = document.getElementById("pImage");
     const promo = document.getElementById("pPromo").checked;
     const promoPrice = document.getElementById("pPromoPrice").value;
+    const promoLabel = document.getElementById("pPromoLabel").value.trim();
 
     if(storesSelected.length === 0){
       alert("Sélectionne au moins un magasin.");
       return;
     }
-    if(promo && !promoPrice){
-      alert("Indique un prix promo.");
+    if(promo && !promoPrice && !promoLabel){
+      alert("Indique un prix promo et/ou une offre spéciale (ex : 3+1).");
       return;
     }
 
     const commit = async (imageData) => {
-      const data = { name, price, cat, stores: storesSelected, promo, promoPrice: promo ? promoPrice : "" };
+      const data = {
+        name, price, cat, stores: storesSelected,
+        promo,
+        promoPrice: promo ? promoPrice : "",
+        promoLabel: promo ? promoLabel : ""
+      };
       if(imageData) data.image = imageData;
 
       if(editingProductId){
@@ -386,7 +393,7 @@ function initProductForm(){
         await addProduct({...data, image: imageData || ""});
       }
       form.reset();
-      document.getElementById("pPromoPriceWrap").classList.add("hidden");
+      document.getElementById("pPromoFields").classList.add("hidden");
       editingProductId = null;
       cancelBtn.classList.add("hidden");
     };
@@ -416,7 +423,8 @@ function editProduct(id){
   setSelectedStores(p.stores || []);
   document.getElementById("pPromo").checked = !!p.promo;
   document.getElementById("pPromoPrice").value = p.promoPrice || "";
-  document.getElementById("pPromoPriceWrap").classList.toggle("hidden", !p.promo);
+  document.getElementById("pPromoLabel").value = p.promoLabel || "";
+  document.getElementById("pPromoFields").classList.toggle("hidden", !p.promo);
   editingProductId = id;
   document.getElementById("cancelEdit").classList.remove("hidden");
   document.getElementById("tab-produits").scrollIntoView({behavior:"smooth", block:"start"});
