@@ -1,6 +1,6 @@
 # CONTEXTE PROJET — Site Cash Boissons
 
-Dernière mise à jour : promotion sans prix possible — ajout d'un champ "Offre spéciale" en texte libre (ex : 3+1, 2 achetées = 1 verre offert), affiché en badge ; le prix promo reste facultatif et affiche un prix barré seulement s'il est renseigné
+Dernière mise à jour : nouvelle section "Services" (statique, pas d'admin) — location de pompe à bière, location de bar, livraison offerte dès 250€ dans un rayon de 20km. Lien ajouté au menu.
 
 ## Fichiers du site (tous à la racine du repo, PAS de sous-dossier images)
 - index.html
@@ -52,6 +52,7 @@ Bières, Vins, Spiritueux, Softs / Eaux, Paniers garnis
   - Catalogue produits : ajout/édition/suppression (nom, prix, catégorie, magasins concernés en multi-sélection avec "Tous les magasins", photo)
   - Catégories : ajout/suppression libre de catégories, utilisées dans le formulaire produit et le filtre catalogue
   - Coordonnées magasins : édition mobile + email par magasin
+- Section "Services" (statique) : location pompe à bière, location bar, livraison offerte dès 250€ (rayon 20km)
 - Système de promotions : case "En promotion" → deux champs facultatifs : prix promo (affiche prix barré) et/ou offre spéciale en texte libre type "3+1" (affichée en badge) ; visible dans le catalogue et dans une section "Promotions" dédiée en haut de page (masquée s'il n'y a aucune promo)
 - Données synchronisées en temps réel via Firestore (visible sur tous les appareils)
 - Logos jaunes intégrés (header agrandi, footer, watermark hero) — jamais sur fond blanc/noir
