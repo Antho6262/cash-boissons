@@ -1,6 +1,6 @@
 # CONTEXTE PROJET — Site Cash Boissons
 
-Dernière mise à jour : correction "6j/7" → "5j/7" dans le bandeau chiffres (mardi à samedi = 5 jours)
+Dernière mise à jour : onglet "Coordonnées magasins" de l'espace pro entièrement éditable — adresse, fixe, horaires, mobile et e-mail modifiables pour chaque magasin (avant : seuls mobile et e-mail l'étaient)
 
 ## Fichiers du site (tous à la racine du repo, PAS de sous-dossier images)
 - index.html
@@ -35,7 +35,7 @@ Dernière mise à jour : correction "6j/7" → "5j/7" dans le bandeau chiffres (
 6. Avranches — Rue Victor Lemarchand, 50300 Saint-Senier-sous-Avranches — fixe non trouvé — avranches@cash-boissons.com — ouvert
 7. Noyelles-Godault — adresse à venir — noyellesgodault@cash-boissons.com — bientôt
 
-Mobiles : vides partout, à remplir dans l'espace pro (onglet "Coordonnées magasins").
+Tous les champs (adresse, fixe, horaires, mobile, email) éditables librement dans l'espace pro (onglet "Coordonnées magasins").
 
 ## Horaires (affichés sur les cartes magasins)
 Bruay, Loos-en-Gohelle, Auchy, Lambres-lez-Douai, Cambrai : du mardi au samedi, 9h30-12h30 et 14h-19h

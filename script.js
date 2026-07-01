@@ -452,12 +452,24 @@ function deleteProduct(id){
 /* ============ ADMIN — MAGASINS (mobile / email) ============ */
 function renderAdminStores(){
   const list = document.getElementById("adminStoreList");
+  const fields = [
+    { key: "address", label: "Adresse", type: "text" },
+    { key: "phone", label: "Téléphone fixe", type: "tel" },
+    { key: "hours", label: "Horaires", type: "text" },
+    { key: "mobile", label: "Téléphone portable", type: "tel" },
+    { key: "email", label: "E-mail", type: "email" }
+  ];
+
   list.innerHTML = stores.map(s => `
     <div class="admin-store-item">
-      <div class="aname">${s.city}<small>${s.address}</small></div>
-      <input type="tel" placeholder="Téléphone portable" value="${s.mobile}" data-id="${s.id}" data-field="mobile">
-      <input type="email" placeholder="E-mail" value="${s.email}" data-id="${s.id}" data-field="email">
-      <span class="save-tick" id="tick-${s.id}">Enregistré ✓</span>
+      <div class="aname">${s.city}<small>${s.dept}</small><span class="save-tick" id="tick-${s.id}">Enregistré ✓</span></div>
+      <div class="astore-fields">
+        ${fields.map(f => `
+          <label class="astore-field">${f.label}
+            <input type="${f.type}" value="${s[f.key] || ''}" data-id="${s.id}" data-field="${f.key}" placeholder="${f.label}">
+          </label>
+        `).join("")}
+      </div>
     </div>
   `).join("");
 
