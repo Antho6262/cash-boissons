@@ -5,6 +5,8 @@
 const DEFAULT_STORES = [
   {
     id: "bruay",
+    lat: 50.4836,
+    lng: 2.5372,
     city: "Bruay-la-Buissière",
     dept: "62 — Pas-de-Calais",
     address: "45 Avenue de la Libération, 62700 Bruay-la-Buissière",
@@ -16,6 +18,8 @@ const DEFAULT_STORES = [
   },
   {
     id: "loos",
+    lat: 50.4394,
+    lng: 2.7719,
     city: "Loos-en-Gohelle",
     dept: "62 — Pas-de-Calais",
     address: "1 Route de Béthune, 62750 Loos-en-Gohelle",
@@ -27,6 +31,8 @@ const DEFAULT_STORES = [
   },
   {
     id: "auchy",
+    lat: 50.5333,
+    lng: 2.7833,
     city: "Auchy-les-Mines",
     dept: "62 — Pas-de-Calais",
     address: "150 Route Nationale, 62138 Auchy-les-Mines",
@@ -38,6 +44,8 @@ const DEFAULT_STORES = [
   },
   {
     id: "lambres",
+    lat: 50.3922,
+    lng: 3.0519,
     city: "Lambres-lez-Douai",
     dept: "59 — Nord",
     address: "279 Rue Jacqueline Auriol, 59552 Lambres-lez-Douai",
@@ -49,6 +57,8 @@ const DEFAULT_STORES = [
   },
   {
     id: "cambrai",
+    lat: 50.1765,
+    lng: 3.2345,
     city: "Cambrai",
     dept: "59 — Nord",
     address: "2095 Avenue de Paris, 59400 Cambrai",
@@ -60,6 +70,8 @@ const DEFAULT_STORES = [
   },
   {
     id: "avranches",
+    lat: 48.6975,
+    lng: -1.3308,
     city: "Avranches",
     dept: "50 — Manche",
     address: "Rue Victor Lemarchand, 50300 Saint-Senier-sous-Avranches",
@@ -71,6 +83,8 @@ const DEFAULT_STORES = [
   },
   {
     id: "noyellesgodault",
+    lat: 50.4167,
+    lng: 2.9833,
     city: "Noyelles-Godault",
     dept: "62 — Pas-de-Calais",
     address: "Adresse à venir",
@@ -467,6 +481,46 @@ function renderMapLinks(){
   `).join("");
 }
 
+let leafletMap = null;
+function renderStoreMap(){
+  if(typeof L === "undefined") return;
+  const withCoords = stores.filter(s => s.lat && s.lng);
+  if(withCoords.length === 0) return;
+
+  const cbIcon = L.icon({
+    iconUrl: "logo-mark.png",
+    iconSize: [30, 30],
+    iconAnchor: [15, 15],
+    popupAnchor: [0, -14],
+    className: "cb-marker"
+  });
+
+  if(!leafletMap){
+    leafletMap = L.map("storeMap", { scrollWheelZoom: false });
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+      attribution: "© OpenStreetMap, © CARTO",
+      maxZoom: 19
+    }).addTo(leafletMap);
+    leafletMap.markersLayer = L.layerGroup().addTo(leafletMap);
+  }
+
+  leafletMap.markersLayer.clearLayers();
+  const bounds = [];
+  withCoords.forEach(s => {
+    bounds.push([s.lat, s.lng]);
+    L.marker([s.lat, s.lng], { icon: cbIcon })
+      .addTo(leafletMap.markersLayer)
+      .bindPopup(`
+        <div class="map-popup">
+          <strong>${s.city}${s.status === 'soon' ? ' (bientôt)' : ''}</strong>
+          <span>${s.address}</span>
+          <a href="${mapsLink(s)}" target="_blank" rel="noopener">Itinéraire →</a>
+        </div>
+      `);
+  });
+  leafletMap.fitBounds(bounds, { padding: [30, 30] });
+}
+
 function fillCategorySelects(){
   const filterCat = document.getElementById("filterCat");
   const pCat = document.getElementById("pCat");
@@ -532,6 +586,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   listenStores(() => {
     renderStores();
     renderMapLinks();
+    renderStoreMap();
     fillStoreFilters();
     renderProducts();
     renderPromotions();

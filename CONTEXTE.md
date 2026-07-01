@@ -1,6 +1,6 @@
 # CONTEXTE PROJET — Site Cash Boissons
 
-Dernière mise à jour : texte "GROSSISTE — CASH & CARRY..." supprimé du hero, remplacé par le logo complet ; le monogramme C (logo-mark.png) est utilisé comme puce devant chaque petit label "01 — Nos adresses" etc. sur tout le site.
+Dernière mise à jour : correction "6j/7" → "5j/7" dans le bandeau chiffres (mardi à samedi = 5 jours)
 
 ## Fichiers du site (tous à la racine du repo, PAS de sous-dossier images)
 - index.html
@@ -56,6 +56,11 @@ Bières, Vins, Spiritueux, Softs / Eaux, Paniers garnis
 - Système de promotions : case "En promotion" → deux champs facultatifs : prix promo (affiche prix barré) et/ou offre spéciale en texte libre type "3+1" (affichée en badge) ; visible dans le catalogue et dans une section "Promotions" dédiée en haut de page (masquée s'il n'y a aucune promo)
 - Données synchronisées en temps réel via Firestore (visible sur tous les appareils)
 - Logos jaunes intégrés (header agrandi, footer, watermark hero) — jamais sur fond blanc/noir
+
+## Dépendances externes
+- Leaflet.js (via unpkg.com, CDN gratuit, pas de clé API) pour la carte interactive
+- Fond de carte CartoDB "dark_all" (gratuit, sans clé)
+- Coordonnées lat/lng des magasins : approximatives au niveau ville (pas l'adresse exacte)
 
 ## Git pour déployer une modif
 cd "C:\Users\amalh\Desktop\Cash Boissons"
