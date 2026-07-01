@@ -1,6 +1,6 @@
 # CONTEXTE PROJET — Site Cash Boissons
 
-Dernière mise à jour : horaires d'ouverture ajoutés sur les cartes magasins (Bruay, Loos, Auchy, Lambres, Cambrai)
+Dernière mise à jour : système de promotions (case "en promotion" + prix promo par produit, badge + prix barré, section "Promotions" dédiée sur la page d'accueil, visible seulement s'il y a au moins une promo active)
 
 ## Fichiers du site (tous à la racine du repo, PAS de sous-dossier images)
 - index.html
@@ -52,6 +52,7 @@ Bières, Vins, Spiritueux, Softs / Eaux, Paniers garnis
   - Catalogue produits : ajout/édition/suppression (nom, prix, catégorie, magasins concernés en multi-sélection avec "Tous les magasins", photo)
   - Catégories : ajout/suppression libre de catégories, utilisées dans le formulaire produit et le filtre catalogue
   - Coordonnées magasins : édition mobile + email par magasin
+- Système de promotions : dans le formulaire produit, case "En promotion" + prix promo → badge rouge et prix barré sur la carte produit, apparaît aussi dans une section "Promotions" dédiée en haut de page (masquée s'il n'y a aucune promo)
 - Données synchronisées en temps réel via Firestore (visible sur tous les appareils)
 - Logos jaunes intégrés (header agrandi, footer, watermark hero) — jamais sur fond blanc/noir
 

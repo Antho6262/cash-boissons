@@ -21,6 +21,7 @@
       <img src="logo-full.png" alt="Cash Boissons" class="brand-logo">
     </a>
     <nav class="nav" id="mainNav">
+      <a href="#promotions">Promotions</a>
       <a href="#magasins">Nos magasins</a>
       <a href="#catalogue">Catalogue</a>
       <a href="#carte">Carte</a>
@@ -60,6 +61,17 @@
       <div class="stat"><span class="stat-num">07</span><span class="stat-label">Magasins<br>dans le Nord & la Manche</span></div>
       <div class="stat"><span class="stat-num">6j/7</span><span class="stat-label">Ouverts du mardi<br>au samedi</span></div>
       <div class="stat"><span class="stat-num">+1</span><span class="stat-label">Nouveau magasin<br>à Noyelles-Godault</span></div>
+    </div>
+  </section>
+
+  <!-- PROMOTIONS -->
+  <section id="promotions" class="section promotions hidden">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="tag">— En ce moment</span>
+        <h2>Nos promotions</h2>
+      </div>
+      <div class="product-grid" id="promoGrid"></div>
     </div>
   </section>
 
@@ -158,6 +170,14 @@
             <div class="form-row">
               <label class="full">Magasins concernés
                 <div class="store-checks" id="pStoreChecks"></div>
+              </label>
+            </div>
+            <div class="form-row">
+              <label class="full promo-check">
+                <input type="checkbox" id="pPromo"> Mettre ce produit en promotion
+              </label>
+              <label id="pPromoPriceWrap" class="hidden">Prix promo (€)
+                <input type="number" id="pPromoPrice" step="0.01" min="0" placeholder="Ex : 1.90">
               </label>
             </div>
             <div class="form-row">

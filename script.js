@@ -233,20 +233,40 @@ function renderProducts(){
   }
   empty.classList.add("hidden");
 
-  grid.innerHTML = filtered.map(p => {
-    const storeNames = (p.stores || []).map(id => stores.find(s => s.id === id)?.city).filter(Boolean).join(", ");
-    return `
-      <article class="product-card">
-        <img class="product-img" src="${p.image || placeholderImg()}" alt="${p.name}">
-        <div class="product-body">
-          <span class="product-cat">${p.cat}</span>
-          <p class="product-name">${p.name}</p>
-          <p class="product-store">${storeNames}</p>
-          <p class="product-price">${Number(p.price).toFixed(2)} €</p>
-        </div>
-      </article>
-    `;
-  }).join("");
+  grid.innerHTML = filtered.map(buildProductCard).join("");
+}
+
+function buildProductCard(p){
+  const storeNames = (p.stores || []).map(id => stores.find(s => s.id === id)?.city).filter(Boolean).join(", ");
+  const isPromo = p.promo && p.promoPrice;
+  const priceHtml = isPromo
+    ? `<span class="product-price-old">${Number(p.price).toFixed(2)} €</span><span class="product-price">${Number(p.promoPrice).toFixed(2)} €</span>`
+    : `<span class="product-price">${Number(p.price).toFixed(2)} €</span>`;
+  return `
+    <article class="product-card">
+      ${isPromo ? `<span class="promo-badge">Promo</span>` : ''}
+      <img class="product-img" src="${p.image || placeholderImg()}" alt="${p.name}">
+      <div class="product-body">
+        <span class="product-cat">${p.cat}</span>
+        <p class="product-name">${p.name}</p>
+        <p class="product-store">${storeNames}</p>
+        <p class="product-price-line">${priceHtml}</p>
+      </div>
+    </article>
+  `;
+}
+
+function renderPromotions(){
+  const section = document.getElementById("promotions");
+  const grid = document.getElementById("promoGrid");
+  const promoProducts = products.filter(p => p.promo && p.promoPrice);
+  if(promoProducts.length === 0){
+    section.classList.add("hidden");
+    grid.innerHTML = "";
+    return;
+  }
+  section.classList.remove("hidden");
+  grid.innerHTML = promoProducts.map(buildProductCard).join("");
 }
 
 function placeholderImg(){
@@ -333,6 +353,10 @@ function initProductForm(){
   const form = document.getElementById("productForm");
   const cancelBtn = document.getElementById("cancelEdit");
 
+  document.getElementById("pPromo").addEventListener("change", e => {
+    document.getElementById("pPromoPriceWrap").classList.toggle("hidden", !e.target.checked);
+  });
+
   form.addEventListener("submit", e => {
     e.preventDefault();
     const name = document.getElementById("pName").value.trim();
@@ -340,14 +364,20 @@ function initProductForm(){
     const cat = document.getElementById("pCat").value;
     const storesSelected = getSelectedStores();
     const fileInput = document.getElementById("pImage");
+    const promo = document.getElementById("pPromo").checked;
+    const promoPrice = document.getElementById("pPromoPrice").value;
 
     if(storesSelected.length === 0){
       alert("Sélectionne au moins un magasin.");
       return;
     }
+    if(promo && !promoPrice){
+      alert("Indique un prix promo.");
+      return;
+    }
 
     const commit = async (imageData) => {
-      const data = { name, price, cat, stores: storesSelected };
+      const data = { name, price, cat, stores: storesSelected, promo, promoPrice: promo ? promoPrice : "" };
       if(imageData) data.image = imageData;
 
       if(editingProductId){
@@ -356,6 +386,7 @@ function initProductForm(){
         await addProduct({...data, image: imageData || ""});
       }
       form.reset();
+      document.getElementById("pPromoPriceWrap").classList.add("hidden");
       editingProductId = null;
       cancelBtn.classList.add("hidden");
     };
@@ -383,6 +414,9 @@ function editProduct(id){
   document.getElementById("pPrice").value = p.price;
   document.getElementById("pCat").value = p.cat;
   setSelectedStores(p.stores || []);
+  document.getElementById("pPromo").checked = !!p.promo;
+  document.getElementById("pPromoPrice").value = p.promoPrice || "";
+  document.getElementById("pPromoPriceWrap").classList.toggle("hidden", !p.promo);
   editingProductId = id;
   document.getElementById("cancelEdit").classList.remove("hidden");
   document.getElementById("tab-produits").scrollIntoView({behavior:"smooth", block:"start"});
@@ -492,6 +526,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     renderMapLinks();
     fillStoreFilters();
     renderProducts();
+    renderPromotions();
     if(document.getElementById("adminPanel").classList.contains("hidden") === false){
       renderAdminStores();
     }
@@ -499,6 +534,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   listenProducts(() => {
     renderProducts();
+    renderPromotions();
     if(document.getElementById("adminPanel").classList.contains("hidden") === false){
       renderAdminProducts();
     }
@@ -507,6 +543,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   listenCategories(() => {
     fillCategorySelects();
     renderProducts();
+    renderPromotions();
     if(document.getElementById("adminPanel").classList.contains("hidden") === false){
       renderAdminCategories();
     }
