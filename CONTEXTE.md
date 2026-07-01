@@ -1,6 +1,6 @@
 # CONTEXTE PROJET — Site Cash Boissons
 
-Dernière mise à jour : nouvelle section "Services" (statique, pas d'admin) — location de pompe à bière, location de bar, livraison offerte dès 250€ dans un rayon de 20km. Lien ajouté au menu.
+Dernière mise à jour : texte "GROSSISTE — CASH & CARRY..." supprimé du hero, remplacé par le logo complet ; le monogramme C (logo-mark.png) est utilisé comme puce devant chaque petit label "01 — Nos adresses" etc. sur tout le site.
 
 ## Fichiers du site (tous à la racine du repo, PAS de sous-dossier images)
 - index.html
