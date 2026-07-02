@@ -551,11 +551,11 @@ function renderStoreMap(){
 
   if(!leafletMap){
     leafletMap = L.map("storeMap", { scrollWheelZoom: false });
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-      attribution: "© OpenStreetMap, © CARTO",
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "© OpenStreetMap",
       maxZoom: 19
     }).addTo(leafletMap);
-    leafletMap.markersLayer = L.layerGroup().addTo(leafletMap);
+    leafletMap.markersLayer = L.markerClusterGroup({ maxClusterRadius: 40 }).addTo(leafletMap);
   }
 
   leafletMap.markersLayer.clearLayers();

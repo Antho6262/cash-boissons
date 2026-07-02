@@ -1,6 +1,6 @@
 # CONTEXTE PROJET — Site Cash Boissons
 
-Dernière mise à jour : statut d'un magasin (Ouvert / Ouverture prochaine) modifiable via un select dans l'espace pro, onglet Coordonnées magasins.
+Dernière mise à jour : tuiles carte passées de CartoDB (noms en anglais) à OpenStreetMap standard (noms locaux/français), toujours assombries en CSS pour matcher le thème.
 
 ## Fichiers du site (tous à la racine du repo, PAS de sous-dossier images)
 - index.html
