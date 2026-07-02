@@ -1,6 +1,6 @@
 # CONTEXTE PROJET — Site Cash Boissons
 
-Dernière mise à jour : tuiles carte sur serveur OpenStreetMap France (osmfr) — noms français, plus fiable que le serveur OSM standard qui affichait des tuiles grises.
+Dernière mise à jour : retour sur les tuiles CartoDB dark_all — les serveurs OSM standard et OSM France renvoyaient des tuiles grises (requêtes bloquées) une fois déployé sur GitHub Pages. CartoDB fonctionne de manière fiable, la plupart des noms de villes sont en français, seules quelques villes étrangères proches restent en anglais (Brussels, Cologne).
 
 ## Fichiers du site (tous à la racine du repo, PAS de sous-dossier images)
 - index.html
