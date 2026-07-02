@@ -487,6 +487,12 @@ function renderAdminStores(){
             <input type="${f.type}" value="${s[f.key] || ''}" data-id="${s.id}" data-field="${f.key}" placeholder="${f.label}">
           </label>
         `).join("")}
+        <label class="astore-field">Statut
+          <select data-id="${s.id}" data-field="status">
+            <option value="open" ${s.status === 'open' ? 'selected' : ''}>Ouvert</option>
+            <option value="soon" ${s.status === 'soon' ? 'selected' : ''}>Ouverture prochaine</option>
+          </select>
+        </label>
         <label class="astore-field">Photo du magasin
           <input type="file" accept="image/*" class="astore-photo" data-id="${s.id}">
         </label>
@@ -495,7 +501,7 @@ function renderAdminStores(){
     </div>
   `).join("");
 
-  list.querySelectorAll("input:not(.astore-photo)").forEach(input => {
+  list.querySelectorAll("input:not(.astore-photo), select").forEach(input => {
     input.addEventListener("change", async () => {
       await updateStoreField(input.dataset.id, input.dataset.field, input.value.trim());
       const tick = document.getElementById("tick-" + input.dataset.id);

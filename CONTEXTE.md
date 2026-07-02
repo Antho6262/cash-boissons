@@ -1,6 +1,6 @@
 # CONTEXTE PROJET — Site Cash Boissons
 
-Dernière mise à jour : les clients peuvent maintenant poster leur propre avis directement sur le site (formulaire public dans la section "Avis clients"), en plus de l'ajout possible depuis l'espace pro. L'espace pro garde la main pour supprimer un avis.
+Dernière mise à jour : statut d'un magasin (Ouvert / Ouverture prochaine) modifiable via un select dans l'espace pro, onglet Coordonnées magasins.
 
 ## Fichiers du site (tous à la racine du repo, PAS de sous-dossier images)
 - index.html
