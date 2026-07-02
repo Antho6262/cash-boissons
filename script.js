@@ -106,10 +106,12 @@ const db = firebase.firestore();
 const storesCol = db.collection("stores");
 const productsCol = db.collection("products");
 const categoriesCol = db.collection("categories");
+const reviewsCol = db.collection("reviews");
 
 let stores = structuredClone(DEFAULT_STORES);
 let products = [];
 let categories = [];
+let reviews = [];
 let editingProductId = null;
 
 /* Premier lancement : on sème les magasins par défaut si la base est vide */
@@ -156,6 +158,18 @@ async function addCategory(name){
 }
 async function removeCategory(id){
   await categoriesCol.doc(id).delete();
+}
+function listenReviews(cb){
+  reviewsCol.orderBy("createdAt", "desc").onSnapshot(snap => {
+    reviews = snap.docs.map(doc => ({id: doc.id, ...doc.data()}));
+    cb();
+  });
+}
+async function addReview(data){
+  await reviewsCol.add({...data, createdAt: Date.now()});
+}
+async function removeReview(id){
+  await reviewsCol.doc(id).delete();
 }
 async function updateStoreField(id, field, value){
   await storesCol.doc(id).set({[field]: value}, {merge:true});
@@ -317,6 +331,7 @@ function initAdminAuth(){
       renderAdminProducts();
       renderAdminStores();
       renderAdminCategories();
+      renderAdminReviews();
     } else {
       alert("Mot de passe incorrect.");
     }
@@ -603,6 +618,61 @@ function initCategoryForm(){
   });
 }
 
+/* ============ AVIS CLIENTS ============ */
+function renderReviews(){
+  const section = document.getElementById("avis");
+  const grid = document.getElementById("reviewGrid");
+  if(reviews.length === 0){
+    section.classList.add("hidden");
+    grid.innerHTML = "";
+    return;
+  }
+  section.classList.remove("hidden");
+  grid.innerHTML = reviews.map(r => `
+    <article class="review-card">
+      <div class="review-stars">${"★".repeat(r.stars)}${"☆".repeat(5 - r.stars)}</div>
+      <p class="review-comment">${r.comment}</p>
+      <p class="review-name">— ${r.name}</p>
+    </article>
+  `).join("");
+}
+
+function renderAdminReviews(){
+  const list = document.getElementById("adminReviewList");
+  if(reviews.length === 0){
+    list.innerHTML = `<p class="empty-state">Aucun avis pour le moment.</p>`;
+    return;
+  }
+  list.innerHTML = reviews.map(r => `
+    <div class="admin-list-item">
+      <div class="admin-list-info">
+        <strong>${"★".repeat(r.stars)}${"☆".repeat(5 - r.stars)} — ${r.name}</strong>
+        <span>${r.comment}</span>
+      </div>
+      <div class="admin-list-actions">
+        <button class="icon-btn danger" title="Supprimer" onclick="onDeleteReview('${r.id}')">✕</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+function onDeleteReview(id){
+  if(!confirm("Supprimer cet avis ?")) return;
+  removeReview(id);
+}
+
+function initReviewForm(){
+  const form = document.getElementById("reviewForm");
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+    const name = document.getElementById("rName").value.trim();
+    const stars = Number(document.getElementById("rStars").value);
+    const comment = document.getElementById("rComment").value.trim();
+    await addReview({name, stars, comment});
+    form.reset();
+  });
+}
+
 /* ============ NAV MOBILE ============ */
 function initNav(){
   const burger = document.getElementById("burgerBtn");
@@ -645,10 +715,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
+  listenReviews(() => {
+    renderReviews();
+    if(document.getElementById("adminPanel").classList.contains("hidden") === false){
+      renderAdminReviews();
+    }
+  });
+
   initAdminAuth();
   initTabs();
   initProductForm();
   initCategoryForm();
+  initReviewForm();
   initNav();
 
   document.getElementById("filterStore").addEventListener("change", renderProducts);

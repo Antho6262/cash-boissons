@@ -28,6 +28,7 @@
       <a href="#services">Services</a>
       <a href="#catalogue">Catalogue</a>
       <a href="#carte">Carte</a>
+      <a href="#avis">Avis</a>
       <a href="#admin" class="nav-admin">Espace pro</a>
     </nav>
     <button class="burger" id="burgerBtn" aria-label="Menu">
@@ -128,11 +129,22 @@
     </div>
   </section>
 
+  <!-- AVIS -->
+  <section id="avis" class="section avis hidden">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="tag"><img src="logo-mark.png" class="tag-mark" alt="">04 — Ils nous font confiance</span>
+        <h2>Avis clients</h2>
+      </div>
+      <div class="review-grid" id="reviewGrid"></div>
+    </div>
+  </section>
+
   <!-- CATALOGUE -->
   <section id="catalogue" class="section catalogue">
     <div class="wrap">
       <div class="section-head">
-        <span class="tag"><img src="logo-mark.png" class="tag-mark" alt="">04 — Produits</span>
+        <span class="tag"><img src="logo-mark.png" class="tag-mark" alt="">05 — Produits</span>
         <h2>Le catalogue</h2>
         <p class="section-desc">Bières, vins, spiritueux, softs... la sélection mise en avant par nos magasins.</p>
       </div>
@@ -156,7 +168,7 @@
   <section id="admin" class="section admin">
     <div class="wrap">
       <div class="section-head">
-        <span class="tag"><img src="logo-mark.png" class="tag-mark" alt="">05 — Réservé aux équipes</span>
+        <span class="tag"><img src="logo-mark.png" class="tag-mark" alt="">06 — Réservé aux équipes</span>
         <h2>Espace pro</h2>
       </div>
 
@@ -180,6 +192,7 @@
         <div class="admin-tabs">
           <button class="tab-btn active" data-tab="tab-produits">Catalogue produits</button>
           <button class="tab-btn" data-tab="tab-categories">Catégories</button>
+          <button class="tab-btn" data-tab="tab-avis">Avis clients</button>
           <button class="tab-btn" data-tab="tab-magasins">Coordonnées magasins</button>
         </div>
 
@@ -242,6 +255,35 @@
             </label>
           </form>
           <div class="admin-list" id="adminCategoryList"></div>
+        </div>
+
+        <!-- TAB AVIS -->
+        <div id="tab-avis" class="admin-tab">
+          <form id="reviewForm" class="product-form">
+            <div class="form-row">
+              <label>Nom du client
+                <input type="text" id="rName" required placeholder="Ex : Julien D.">
+              </label>
+              <label>Note
+                <select id="rStars" required>
+                  <option value="5">★★★★★</option>
+                  <option value="4">★★★★☆</option>
+                  <option value="3">★★★☆☆</option>
+                  <option value="2">★★☆☆☆</option>
+                  <option value="1">★☆☆☆☆</option>
+                </select>
+              </label>
+            </div>
+            <div class="form-row">
+              <label class="full">Commentaire
+                <input type="text" id="rComment" required placeholder="Ex : Super accueil, grand choix de bières.">
+              </label>
+            </div>
+            <div class="form-row">
+              <button type="submit" class="btn btn-yellow">Ajouter l'avis</button>
+            </div>
+          </form>
+          <div class="admin-list" id="adminReviewList"></div>
         </div>
 
         <!-- TAB MAGASINS -->
