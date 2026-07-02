@@ -179,6 +179,7 @@ function renderStores(){
   const grid = document.getElementById("storeGrid");
   grid.innerHTML = stores.map(s => `
     <article class="store-card ${s.status === 'soon' ? 'soon' : ''}">
+      ${s.photo ? `<img class="store-photo" src="${s.photo}" alt="Magasin ${s.city}">` : ''}
       <span class="store-badge ${s.status === 'soon' ? 'badge-soon' : ''}">${s.status === 'soon' ? 'Ouverture prochaine' : 'Ouvert'}</span>
       <h3 class="store-city">${s.city}</h3>
       <p class="store-dept">${s.dept}</p>
@@ -234,10 +235,12 @@ function renderProducts(){
   const empty = document.getElementById("catalogueEmpty");
   const fStore = document.getElementById("filterStore").value;
   const fCat = document.getElementById("filterCat").value;
+  const q = document.getElementById("searchProduct").value.trim().toLowerCase();
 
   const filtered = products.filter(p =>
     (fStore === "all" || (p.stores || []).includes(fStore)) &&
-    (fCat === "all" || p.cat === fCat)
+    (fCat === "all" || p.cat === fCat) &&
+    (q === "" || p.name.toLowerCase().includes(q))
   );
 
   if(filtered.length === 0){
@@ -469,16 +472,34 @@ function renderAdminStores(){
             <input type="${f.type}" value="${s[f.key] || ''}" data-id="${s.id}" data-field="${f.key}" placeholder="${f.label}">
           </label>
         `).join("")}
+        <label class="astore-field">Photo du magasin
+          <input type="file" accept="image/*" class="astore-photo" data-id="${s.id}">
+        </label>
+        ${s.photo ? `<img src="${s.photo}" class="astore-photo-preview" alt="">` : ''}
       </div>
     </div>
   `).join("");
 
-  list.querySelectorAll("input").forEach(input => {
+  list.querySelectorAll("input:not(.astore-photo)").forEach(input => {
     input.addEventListener("change", async () => {
       await updateStoreField(input.dataset.id, input.dataset.field, input.value.trim());
       const tick = document.getElementById("tick-" + input.dataset.id);
       tick.classList.add("show");
       setTimeout(() => tick.classList.remove("show"), 1500);
+    });
+  });
+
+  list.querySelectorAll(".astore-photo").forEach(input => {
+    input.addEventListener("change", () => {
+      if(!input.files || !input.files[0]) return;
+      const reader = new FileReader();
+      reader.onload = async () => {
+        await updateStoreField(input.dataset.id, "photo", reader.result);
+        const tick = document.getElementById("tick-" + input.dataset.id);
+        tick.classList.add("show");
+        setTimeout(() => tick.classList.remove("show"), 1500);
+      };
+      reader.readAsDataURL(input.files[0]);
     });
   });
 }
@@ -632,4 +653,5 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   document.getElementById("filterStore").addEventListener("change", renderProducts);
   document.getElementById("filterCat").addEventListener("change", renderProducts);
+  document.getElementById("searchProduct").addEventListener("input", renderProducts);
 });

@@ -1,6 +1,6 @@
 # CONTEXTE PROJET — Site Cash Boissons
 
-Dernière mise à jour : onglet "Coordonnées magasins" de l'espace pro entièrement éditable — adresse, fixe, horaires, mobile et e-mail modifiables pour chaque magasin (avant : seuls mobile et e-mail l'étaient)
+Dernière mise à jour : réseaux sociaux dans le footer (liens # à remplacer par les vraies URLs), barre de recherche produit dans le catalogue, photos réelles des magasins (upload dans l'espace pro, onglet Coordonnées magasins, affichées sur les cartes magasins). Reste à faire plus tard : commande en ligne avec retrait en magasin.
 
 ## Fichiers du site (tous à la racine du repo, PAS de sous-dossier images)
 - index.html
