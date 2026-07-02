@@ -1,6 +1,6 @@
 # CONTEXTE PROJET — Site Cash Boissons
 
-Dernière mise à jour : tuiles carte passées de CartoDB (noms en anglais) à OpenStreetMap standard (noms locaux/français), toujours assombries en CSS pour matcher le thème.
+Dernière mise à jour : tuiles carte sur serveur OpenStreetMap France (osmfr) — noms français, plus fiable que le serveur OSM standard qui affichait des tuiles grises.
 
 ## Fichiers du site (tous à la racine du repo, PAS de sous-dossier images)
 - index.html

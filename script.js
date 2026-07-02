@@ -551,9 +551,10 @@ function renderStoreMap(){
 
   if(!leafletMap){
     leafletMap = L.map("storeMap", { scrollWheelZoom: false });
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: "© OpenStreetMap",
-      maxZoom: 19
+    L.tileLayer("https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png", {
+      attribution: "© OpenStreetMap France",
+      maxZoom: 19,
+      subdomains: "abc"
     }).addTo(leafletMap);
     leafletMap.markersLayer = L.markerClusterGroup({ maxClusterRadius: 40 }).addTo(leafletMap);
   }
