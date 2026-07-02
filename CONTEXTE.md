@@ -1,6 +1,6 @@
 # CONTEXTE PROJET — Site Cash Boissons
 
-Dernière mise à jour : section "Avis clients" (étoiles + commentaire), gérée dans un nouvel onglet "Avis clients" de l'espace pro (ajout/suppression), masquée tant qu'il n'y a aucun avis. Collection Firestore "reviews".
+Dernière mise à jour : les clients peuvent maintenant poster leur propre avis directement sur le site (formulaire public dans la section "Avis clients"), en plus de l'ajout possible depuis l'espace pro. L'espace pro garde la main pour supprimer un avis.
 
 ## Fichiers du site (tous à la racine du repo, PAS de sous-dossier images)
 - index.html

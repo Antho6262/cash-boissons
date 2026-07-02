@@ -620,14 +620,14 @@ function initCategoryForm(){
 
 /* ============ AVIS CLIENTS ============ */
 function renderReviews(){
-  const section = document.getElementById("avis");
   const grid = document.getElementById("reviewGrid");
+  const empty = document.getElementById("reviewsEmpty");
   if(reviews.length === 0){
-    section.classList.add("hidden");
     grid.innerHTML = "";
+    empty.classList.remove("hidden");
     return;
   }
-  section.classList.remove("hidden");
+  empty.classList.add("hidden");
   grid.innerHTML = reviews.map(r => `
     <article class="review-card">
       <div class="review-stars">${"★".repeat(r.stars)}${"☆".repeat(5 - r.stars)}</div>
@@ -670,6 +670,16 @@ function initReviewForm(){
     const comment = document.getElementById("rComment").value.trim();
     await addReview({name, stars, comment});
     form.reset();
+  });
+
+  const publicForm = document.getElementById("publicReviewForm");
+  publicForm.addEventListener("submit", async e => {
+    e.preventDefault();
+    const name = document.getElementById("prName").value.trim();
+    const stars = Number(document.getElementById("prStars").value);
+    const comment = document.getElementById("prComment").value.trim();
+    await addReview({name, stars, comment});
+    publicForm.reset();
   });
 }
 
