@@ -1,6 +1,6 @@
 # CONTEXTE PROJET — Site Cash Boissons
 
-Dernière mise à jour : les photos magasin (onglet "Coordonnées magasins") sont maintenant compressées côté navigateur (canvas, maxWidth 1000px, JPEG qualité 0.7) avant sauvegarde en base64 dans Firestore, pour rester sous la limite de 1 Mo par document.
+Dernière mise à jour : les photos magasin sont recadrées en haut (object-position:top sur .store-photo) pour bien montrer le logo sur les cartes.
 
 
 ## Fichiers du site (tous à la racine du repo, PAS de sous-dossier images)
