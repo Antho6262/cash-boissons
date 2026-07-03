@@ -382,6 +382,41 @@ function renderAdminProducts(){
   }).join("");
 }
 
+function initImportForm(){
+  const input = document.getElementById("importFile");
+  const hint = document.getElementById("importHint");
+  input.addEventListener("change", async () => {
+    const file = input.files[0];
+    if(!file) return;
+    hint.textContent = "Import en cours...";
+
+    const data = await file.arrayBuffer();
+    const wb = XLSX.read(data, { type: "array" });
+    const sheet = wb.Sheets[wb.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+
+    const defaultStore = stores[0]?.id;
+    let count = 0;
+    for(const row of rows){
+      const name = row.nom || row.Nom || row.name || "";
+      const price = row.prix || row.Prix || row.price || 0;
+      const cat = row.categorie || row.catégorie || row.Catégorie || row.category || categories[0]?.name || "";
+      if(!name) continue;
+      await addProduct({
+        name: String(name).trim(),
+        price: Number(price) || 0,
+        cat: String(cat).trim(),
+        stores: [defaultStore],
+        promo: false, promoPrice: "", promoLabel: "",
+        image: ""
+      });
+      count++;
+    }
+    hint.textContent = `${count} produit(s) importé(s).`;
+    input.value = "";
+  });
+}
+
 function initProductForm(){
   const form = document.getElementById("productForm");
   const cancelBtn = document.getElementById("cancelEdit");
@@ -511,33 +546,17 @@ function renderAdminStores(){
   });
 
   list.querySelectorAll(".astore-photo").forEach(input => {
-    input.addEventListener("change", async () => {
+    input.addEventListener("change", () => {
       if(!input.files || !input.files[0]) return;
-      const compressed = await compressImage(input.files[0]);
-      await updateStoreField(input.dataset.id, "photo", compressed);
-      const tick = document.getElementById("tick-" + input.dataset.id);
-      tick.classList.add("show");
-      setTimeout(() => tick.classList.remove("show"), 1500);
+      const reader = new FileReader();
+      reader.onload = async () => {
+        await updateStoreField(input.dataset.id, "photo", reader.result);
+        const tick = document.getElementById("tick-" + input.dataset.id);
+        tick.classList.add("show");
+        setTimeout(() => tick.classList.remove("show"), 1500);
+      };
+      reader.readAsDataURL(input.files[0]);
     });
-  });
-}
-
-function compressImage(file, maxWidth = 1000, quality = 0.7){
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    const reader = new FileReader();
-    reader.onload = () => { img.src = reader.result; };
-    reader.onerror = reject;
-    img.onload = () => {
-      const scale = Math.min(1, maxWidth / img.width);
-      const canvas = document.createElement("canvas");
-      canvas.width = img.width * scale;
-      canvas.height = img.height * scale;
-      canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
-      resolve(canvas.toDataURL("image/jpeg", quality));
-    };
-    img.onerror = reject;
-    reader.readAsDataURL(file);
   });
 }
 
@@ -757,6 +776,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   initAdminAuth();
   initTabs();
   initProductForm();
+  initImportForm();
   initCategoryForm();
   initReviewForm();
   initNav();

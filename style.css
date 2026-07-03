@@ -144,7 +144,7 @@ a{color:inherit;text-decoration:none;}
   background:repeating-linear-gradient(135deg, var(--navy-800), var(--navy-800) 10px, #0d1f3f 10px, #0d1f3f 20px);
   border-style:dashed;border-color:var(--yellow-deep);
 }
-.store-photo{width:calc(100% + 52px);margin:-26px -26px 18px;display:block;aspect-ratio:16/9;object-fit:cover;object-position:top;}
+.store-photo{width:calc(100% + 52px);margin:-26px -26px 18px;display:block;aspect-ratio:16/9;object-fit:cover;}
 .store-badge{
   position:absolute;top:0;right:0;
   font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;
@@ -270,6 +270,16 @@ a{color:inherit;text-decoration:none;}
 .admin-tab{display:none;}
 .admin-tab.active{display:block;}
 
+.import-box{
+  background:var(--navy-800);border:1px dashed var(--yellow-deep);border-radius:var(--radius);
+  padding:20px 22px;margin-bottom:24px;
+}
+.import-box label{display:flex;flex-direction:column;gap:8px;font-size:.85rem;font-weight:700;color:var(--muted);}
+.import-box input{
+  background:var(--navy-900);border:1px solid var(--navy-line);color:var(--cream);
+  padding:10px 12px;border-radius:8px;
+}
+.import-hint{font-size:.8rem;color:var(--yellow);margin:10px 0 0;}
 .product-form{background:var(--navy-800);border:1px solid var(--navy-line);border-radius:var(--radius);padding:26px;margin-bottom:32px;}
 .form-row{display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap;}
 .form-row label{flex:1;min-width:200px;display:flex;flex-direction:column;gap:6px;font-size:.82rem;font-weight:700;color:var(--muted);}

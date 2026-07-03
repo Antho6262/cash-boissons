@@ -14,6 +14,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 
@@ -228,6 +229,13 @@
 
         <!-- TAB PRODUITS -->
         <div id="tab-produits" class="admin-tab active">
+          <div class="import-box">
+            <label class="full">Importer un fichier Prismasoft (Excel/CSV) — colonnes attendues : nom, prix, catégorie
+              <input type="file" id="importFile" accept=".xlsx,.xls,.csv">
+            </label>
+            <p class="import-hint" id="importHint"></p>
+          </div>
+
           <form id="productForm" class="product-form">
             <div class="form-row">
               <label>Nom du produit

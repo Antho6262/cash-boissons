@@ -1,7 +1,6 @@
 # CONTEXTE PROJET — Site Cash Boissons
 
-Dernière mise à jour : les photos magasin sont recadrées en haut (object-position:top sur .store-photo) pour bien montrer le logo sur les cartes.
-
+Dernière mise à jour : import Excel/CSV dans l'onglet Catalogue produits de l'espace pro (colonnes attendues : nom, prix, catégorie) — pour importer les exports Prismasoft sans passer par leur API. Produits importés assignés au premier magasin de la liste par défaut, à réassigner manuellement si besoin.
 
 ## Fichiers du site (tous à la racine du repo, PAS de sous-dossier images)
 - index.html
