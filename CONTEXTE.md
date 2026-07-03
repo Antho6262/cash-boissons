@@ -1,6 +1,6 @@
 # CONTEXTE PROJET — Site Cash Boissons
 
-Dernière mise à jour : import Excel/CSV dans l'onglet Catalogue produits de l'espace pro (colonnes attendues : nom, prix, catégorie) — pour importer les exports Prismasoft sans passer par leur API. Produits importés assignés au premier magasin de la liste par défaut, à réassigner manuellement si besoin.
+Dernière mise à jour : lien "Espace pro" retiré du menu principal, accès discret via un petit point dans le footer ("· Site by Anthony.M") qui mène à #admin.
 
 ## Fichiers du site (tous à la racine du repo, PAS de sous-dossier images)
 - index.html
