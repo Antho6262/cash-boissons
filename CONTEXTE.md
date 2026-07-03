@@ -1,6 +1,7 @@
 # CONTEXTE PROJET — Site Cash Boissons
 
-Dernière mise à jour : retour sur les tuiles CartoDB dark_all — les serveurs OSM standard et OSM France renvoyaient des tuiles grises (requêtes bloquées) une fois déployé sur GitHub Pages. CartoDB fonctionne de manière fiable, la plupart des noms de villes sont en français, seules quelques villes étrangères proches restent en anglais (Brussels, Cologne).
+Dernière mise à jour : les photos magasin (onglet "Coordonnées magasins") sont maintenant compressées côté navigateur (canvas, maxWidth 1000px, JPEG qualité 0.7) avant sauvegarde en base64 dans Firestore, pour rester sous la limite de 1 Mo par document.
+
 
 ## Fichiers du site (tous à la racine du repo, PAS de sous-dossier images)
 - index.html

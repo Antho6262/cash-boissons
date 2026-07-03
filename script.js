@@ -511,17 +511,33 @@ function renderAdminStores(){
   });
 
   list.querySelectorAll(".astore-photo").forEach(input => {
-    input.addEventListener("change", () => {
+    input.addEventListener("change", async () => {
       if(!input.files || !input.files[0]) return;
-      const reader = new FileReader();
-      reader.onload = async () => {
-        await updateStoreField(input.dataset.id, "photo", reader.result);
-        const tick = document.getElementById("tick-" + input.dataset.id);
-        tick.classList.add("show");
-        setTimeout(() => tick.classList.remove("show"), 1500);
-      };
-      reader.readAsDataURL(input.files[0]);
+      const compressed = await compressImage(input.files[0]);
+      await updateStoreField(input.dataset.id, "photo", compressed);
+      const tick = document.getElementById("tick-" + input.dataset.id);
+      tick.classList.add("show");
+      setTimeout(() => tick.classList.remove("show"), 1500);
     });
+  });
+}
+
+function compressImage(file, maxWidth = 1000, quality = 0.7){
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = () => { img.src = reader.result; };
+    reader.onerror = reject;
+    img.onload = () => {
+      const scale = Math.min(1, maxWidth / img.width);
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width * scale;
+      canvas.height = img.height * scale;
+      canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+      resolve(canvas.toDataURL("image/jpeg", quality));
+    };
+    img.onerror = reject;
+    reader.readAsDataURL(file);
   });
 }
 
