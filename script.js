@@ -802,8 +802,6 @@ function addToCart(productId){
   else cart.push({ lineId, id: p.id, name: `${p.name} (${chosen.label})`, price: unitPrice, qty });
 
   saveCart();
-  document.getElementById("cartDrawer").classList.remove("hidden");
-  document.getElementById("cartOverlay").classList.remove("hidden");
 }
 
 function changeQty(lineId, delta){
