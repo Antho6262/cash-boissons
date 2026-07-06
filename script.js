@@ -274,6 +274,10 @@ function buildProductCard(p){
   const priceHtml = hasPromoPrice
     ? `<span class="product-price-old">${Number(p.price).toFixed(2)} €</span><span class="product-price">${Number(p.promoPrice).toFixed(2)} €</span>`
     : `<span class="product-price">${Number(p.price).toFixed(2)} €</span>`;
+
+  const conds = (p.conditionnements && p.conditionnements.length) ? p.conditionnements : [{label: "Unité", price: p.price}];
+  const condOptions = conds.map((c, i) => `<option value="${i}">${c.label} — ${Number(c.price).toFixed(2)} €</option>`).join("");
+
   return `
     <article class="product-card">
       ${p.promo ? `<span class="promo-badge">${hasPromoLabel ? p.promoLabel : 'Promo'}</span>` : ''}
@@ -283,7 +287,11 @@ function buildProductCard(p){
         <p class="product-name">${p.name}</p>
         <p class="product-store">${storeNames}</p>
         <p class="product-price-line">${priceHtml}</p>
-        <button class="btn btn-outline-sm add-cart-btn" onclick="addToCart('${p.id}')">+ Panier</button>
+        <select class="product-cond-select" id="cond-${p.id}">${condOptions}</select>
+        <div class="product-qty-row">
+          <input type="number" id="qty-${p.id}" min="1" value="1">
+          <button class="btn btn-outline-sm add-cart-btn" onclick="addToCart('${p.id}')">+ Panier</button>
+        </div>
       </div>
     </article>
   `;
@@ -419,9 +427,37 @@ function initImportForm(){
   });
 }
 
+function addCondRow(label = "", price = ""){
+  const list = document.getElementById("condList");
+  const row = document.createElement("div");
+  row.className = "cond-row";
+  row.innerHTML = `
+    <input type="text" class="cond-label" placeholder="Ex : Unité, Fardeau de 24" value="${label}">
+    <input type="number" class="cond-price" step="0.01" min="0" placeholder="Prix €" value="${price}">
+    <button type="button" class="cond-remove">✕</button>
+  `;
+  row.querySelector(".cond-remove").addEventListener("click", () => row.remove());
+  list.appendChild(row);
+}
+
+function getConditionnements(){
+  return Array.from(document.querySelectorAll(".cond-row")).map(row => ({
+    label: row.querySelector(".cond-label").value.trim(),
+    price: Number(row.querySelector(".cond-price").value) || 0
+  })).filter(c => c.label && c.price > 0);
+}
+
+function resetCondList(){
+  document.getElementById("condList").innerHTML = "";
+  addCondRow("Unité", "");
+}
+
 function initProductForm(){
   const form = document.getElementById("productForm");
   const cancelBtn = document.getElementById("cancelEdit");
+
+  resetCondList();
+  document.getElementById("condAdd").addEventListener("click", () => addCondRow());
 
   document.getElementById("pPromo").addEventListener("change", e => {
     document.getElementById("pPromoFields").classList.toggle("hidden", !e.target.checked);
@@ -430,16 +466,20 @@ function initProductForm(){
   form.addEventListener("submit", e => {
     e.preventDefault();
     const name = document.getElementById("pName").value.trim();
-    const price = document.getElementById("pPrice").value;
     const cat = document.getElementById("pCat").value;
     const storesSelected = getSelectedStores();
     const fileInput = document.getElementById("pImage");
     const promo = document.getElementById("pPromo").checked;
     const promoPrice = document.getElementById("pPromoPrice").value;
     const promoLabel = document.getElementById("pPromoLabel").value.trim();
+    const conditionnements = getConditionnements();
 
     if(storesSelected.length === 0){
       alert("Sélectionne au moins un magasin.");
+      return;
+    }
+    if(conditionnements.length === 0){
+      alert("Ajoute au moins un conditionnement avec un prix (ex : Unité).");
       return;
     }
     if(promo && !promoPrice && !promoLabel){
@@ -449,7 +489,9 @@ function initProductForm(){
 
     const commit = async (imageData) => {
       const data = {
-        name, price, cat, stores: storesSelected,
+        name, cat, stores: storesSelected,
+        conditionnements,
+        price: conditionnements[0].price,
         promo,
         promoPrice: promo ? promoPrice : "",
         promoLabel: promo ? promoLabel : ""
@@ -462,6 +504,7 @@ function initProductForm(){
         await addProduct({...data, image: imageData || ""});
       }
       form.reset();
+      resetCondList();
       document.getElementById("pPromoFields").classList.add("hidden");
       editingProductId = null;
       cancelBtn.classList.add("hidden");
@@ -478,6 +521,7 @@ function initProductForm(){
 
   cancelBtn.addEventListener("click", () => {
     form.reset();
+    resetCondList();
     editingProductId = null;
     cancelBtn.classList.add("hidden");
   });
@@ -487,9 +531,11 @@ function editProduct(id){
   const p = products.find(x => x.id === id);
   if(!p) return;
   document.getElementById("pName").value = p.name;
-  document.getElementById("pPrice").value = p.price;
   document.getElementById("pCat").value = p.cat;
   setSelectedStores(p.stores || []);
+  document.getElementById("condList").innerHTML = "";
+  const conds = (p.conditionnements && p.conditionnements.length) ? p.conditionnements : [{label: "Unité", price: p.price}];
+  conds.forEach(c => addCondRow(c.label, c.price));
   document.getElementById("pPromo").checked = !!p.promo;
   document.getElementById("pPromoPrice").value = p.promoPrice || "";
   document.getElementById("pPromoLabel").value = p.promoLabel || "";
@@ -739,19 +785,32 @@ function saveCart(){
 function addToCart(productId){
   const p = products.find(x => x.id === productId);
   if(!p) return;
-  const existing = cart.find(i => i.id === productId);
-  if(existing) existing.qty++;
-  else cart.push({ id: p.id, name: p.name, price: (p.promo && p.promoPrice) ? Number(p.promoPrice) : Number(p.price), qty: 1 });
+
+  const conds = (p.conditionnements && p.conditionnements.length) ? p.conditionnements : [{label: "Unité", price: p.price}];
+  const select = document.getElementById("cond-" + productId);
+  const condIndex = select ? Number(select.value) : 0;
+  const chosen = conds[condIndex] || conds[0];
+  const isBasePromo = condIndex === 0 && p.promo && p.promoPrice;
+  const unitPrice = isBasePromo ? Number(p.promoPrice) : Number(chosen.price);
+
+  const qtyInput = document.getElementById("qty-" + productId);
+  const qty = Math.max(1, Number(qtyInput?.value) || 1);
+
+  const lineId = `${productId}__${chosen.label}`;
+  const existing = cart.find(i => i.lineId === lineId);
+  if(existing) existing.qty += qty;
+  else cart.push({ lineId, id: p.id, name: `${p.name} (${chosen.label})`, price: unitPrice, qty });
+
   saveCart();
   document.getElementById("cartDrawer").classList.remove("hidden");
   document.getElementById("cartOverlay").classList.remove("hidden");
 }
 
-function changeQty(id, delta){
-  const item = cart.find(i => i.id === id);
+function changeQty(lineId, delta){
+  const item = cart.find(i => i.lineId === lineId);
   if(!item) return;
   item.qty += delta;
-  if(item.qty <= 0) cart = cart.filter(i => i.id !== id);
+  if(item.qty <= 0) cart = cart.filter(i => i.lineId !== lineId);
   saveCart();
 }
 
@@ -774,9 +833,9 @@ function renderCart(){
     <div class="cart-item">
       <span class="ci-name">${i.name}</span>
       <div class="ci-qty">
-        <button onclick="changeQty('${i.id}', -1)">−</button>
+        <button onclick="changeQty('${i.lineId}', -1)">−</button>
         <span>${i.qty}</span>
-        <button onclick="changeQty('${i.id}', 1)">+</button>
+        <button onclick="changeQty('${i.lineId}', 1)">+</button>
       </div>
       <span class="ci-price">${(i.price * i.qty).toFixed(2)} €</span>
     </div>

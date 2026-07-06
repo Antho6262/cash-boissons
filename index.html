@@ -274,16 +274,19 @@
 
           <form id="productForm" class="product-form">
             <div class="form-row">
-              <label>Nom du produit
+              <label class="full">Nom du produit
                 <input type="text" id="pName" required placeholder="Ex : Bière Kwak 33cl">
-              </label>
-              <label>Prix (€)
-                <input type="number" id="pPrice" step="0.01" min="0" required placeholder="Ex : 2.50">
               </label>
             </div>
             <div class="form-row">
               <label>Catégorie
                 <select id="pCat" required></select>
+              </label>
+            </div>
+            <div class="form-row">
+              <label class="full">Conditionnements
+                <div id="condList" class="cond-list"></div>
+                <button type="button" id="condAdd" class="btn btn-outline-sm btn-small">+ Ajouter un conditionnement</button>
               </label>
             </div>
             <div class="form-row">

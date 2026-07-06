@@ -1,9 +1,6 @@
 # CONTEXTE PROJET — Site Cash Boissons
 
-Dernière mise à jour : 3 nouvelles fonctionnalités —
-1) Commande en ligne avec panier (bouton "+ Panier" sur chaque produit), retrait en magasin (choix magasin/date/heure), tunnel de commande, collection Firestore "orders", nouvel onglet admin "Commandes" (statut en attente/prête/récupérée)
-2) Simulateur "combien de bouteilles/fûts pour X invités" dans la section Services (calcul côté client, pas de DB)
-3) Devis instantané location pompe à bière / bar dans la section Services — tarifs par défaut dans script.js (RENTAL_RATES : pompe 35€/j, bar 90€/j, à ajuster directement dans le code)
+Dernière mise à jour : conditionnements multiples par produit (ex : Unité, Fardeau de 24), gérés dans l'espace pro (lignes ajoutables/supprimables, label + prix chacune). Sur le catalogue public, le client choisit le conditionnement et la quantité avant d'ajouter au panier.
 
 ## Fichiers du site (tous à la racine du repo, PAS de sous-dossier images)
 - index.html
