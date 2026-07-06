@@ -1,6 +1,9 @@
 # CONTEXTE PROJET — Site Cash Boissons
 
-Dernière mise à jour : lien "Espace pro" retiré du menu principal, accès discret via un petit point dans le footer ("· Site by Anthony.M") qui mène à #admin.
+Dernière mise à jour : 3 nouvelles fonctionnalités —
+1) Commande en ligne avec panier (bouton "+ Panier" sur chaque produit), retrait en magasin (choix magasin/date/heure), tunnel de commande, collection Firestore "orders", nouvel onglet admin "Commandes" (statut en attente/prête/récupérée)
+2) Simulateur "combien de bouteilles/fûts pour X invités" dans la section Services (calcul côté client, pas de DB)
+3) Devis instantané location pompe à bière / bar dans la section Services — tarifs par défaut dans script.js (RENTAL_RATES : pompe 35€/j, bar 90€/j, à ajuster directement dans le code)
 
 ## Fichiers du site (tous à la racine du repo, PAS de sous-dossier images)
 - index.html
@@ -20,7 +23,7 @@ Dernière mise à jour : lien "Espace pro" retiré du menu principal, accès dis
 - Firebase Firestore, projet "cash-boissons"
 - Config déjà collée dans firebase-config.js
 - Règles Firestore ouvertes jusqu'au 31/12/2026 (à renouveler après)
-- Collections : "stores" (magasins), "products" (catalogue), "categories" (catégories produits)
+- Collections : "stores" (magasins), "products" (catalogue), "categories" (catégories produits), "reviews" (avis clients), "orders" (commandes panier/retrait)
 
 ## Accès admin
 - Bouton "Espace pro" sur le site

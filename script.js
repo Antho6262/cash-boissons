@@ -283,6 +283,7 @@ function buildProductCard(p){
         <p class="product-name">${p.name}</p>
         <p class="product-store">${storeNames}</p>
         <p class="product-price-line">${priceHtml}</p>
+        <button class="btn btn-outline-sm add-cart-btn" onclick="addToCart('${p.id}')">+ Panier</button>
       </div>
     </article>
   `;
@@ -332,6 +333,7 @@ function initAdminAuth(){
       renderAdminStores();
       renderAdminCategories();
       renderAdminReviews();
+      renderAdminOrders();
     } else {
       alert("Mot de passe incorrect.");
     }
@@ -725,6 +727,173 @@ function initReviewForm(){
 }
 
 /* ============ NAV MOBILE ============ */
+/* ============ PANIER & COMMANDE ============ */
+const ordersCol = db.collection("orders");
+let cart = JSON.parse(localStorage.getItem("cb_cart") || "[]");
+
+function saveCart(){
+  localStorage.setItem("cb_cart", JSON.stringify(cart));
+  renderCart();
+}
+
+function addToCart(productId){
+  const p = products.find(x => x.id === productId);
+  if(!p) return;
+  const existing = cart.find(i => i.id === productId);
+  if(existing) existing.qty++;
+  else cart.push({ id: p.id, name: p.name, price: (p.promo && p.promoPrice) ? Number(p.promoPrice) : Number(p.price), qty: 1 });
+  saveCart();
+  document.getElementById("cartDrawer").classList.remove("hidden");
+  document.getElementById("cartOverlay").classList.remove("hidden");
+}
+
+function changeQty(id, delta){
+  const item = cart.find(i => i.id === id);
+  if(!item) return;
+  item.qty += delta;
+  if(item.qty <= 0) cart = cart.filter(i => i.id !== id);
+  saveCart();
+}
+
+function renderCart(){
+  document.getElementById("cartCount").textContent = cart.reduce((n, i) => n + i.qty, 0);
+  const box = document.getElementById("cartItems");
+  const emptyMsg = document.getElementById("cartEmptyMsg");
+  const checkoutForm = document.getElementById("checkoutForm");
+
+  if(cart.length === 0){
+    box.innerHTML = "";
+    emptyMsg.classList.remove("hidden");
+    checkoutForm.classList.add("hidden");
+    return;
+  }
+  emptyMsg.classList.add("hidden");
+  checkoutForm.classList.remove("hidden");
+
+  box.innerHTML = cart.map(i => `
+    <div class="cart-item">
+      <span class="ci-name">${i.name}</span>
+      <div class="ci-qty">
+        <button onclick="changeQty('${i.id}', -1)">−</button>
+        <span>${i.qty}</span>
+        <button onclick="changeQty('${i.id}', 1)">+</button>
+      </div>
+      <span class="ci-price">${(i.price * i.qty).toFixed(2)} €</span>
+    </div>
+  `).join("");
+
+  const total = cart.reduce((sum, i) => sum + i.price * i.qty, 0);
+  document.getElementById("cartTotal").textContent = total.toFixed(2);
+}
+
+function initCart(){
+  const drawer = document.getElementById("cartDrawer");
+  const overlay = document.getElementById("cartOverlay");
+  document.getElementById("cartBtn").addEventListener("click", () => {
+    drawer.classList.remove("hidden");
+    overlay.classList.remove("hidden");
+  });
+  const close = () => { drawer.classList.add("hidden"); overlay.classList.add("hidden"); };
+  document.getElementById("cartClose").addEventListener("click", close);
+  overlay.addEventListener("click", close);
+
+  document.getElementById("checkoutForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const order = {
+      items: cart,
+      total: cart.reduce((sum, i) => sum + i.price * i.qty, 0),
+      store: document.getElementById("orderStore").value,
+      date: document.getElementById("orderDate").value,
+      time: document.getElementById("orderTime").value,
+      name: document.getElementById("orderName").value.trim(),
+      phone: document.getElementById("orderPhone").value.trim(),
+      status: "en attente",
+      createdAt: Date.now()
+    };
+    await ordersCol.add(order);
+    cart = [];
+    saveCart();
+    document.getElementById("checkoutForm").classList.add("hidden");
+    document.getElementById("cartConfirm").classList.remove("hidden");
+    e.target.reset();
+    setTimeout(() => document.getElementById("cartConfirm").classList.add("hidden"), 4000);
+  });
+
+  renderCart();
+}
+
+function fillOrderStoreSelect(){
+  const sel = document.getElementById("orderStore");
+  sel.innerHTML = stores.filter(s => s.status !== "soon").map(s => `<option value="${s.id}">${s.city}</option>`).join("");
+}
+
+/* ============ ADMIN — COMMANDES ============ */
+function listenOrders(cb){
+  ordersCol.orderBy("createdAt", "desc").onSnapshot(snap => {
+    window.__orders = snap.docs.map(doc => ({id: doc.id, ...doc.data()}));
+    cb();
+  });
+}
+
+function renderAdminOrders(){
+  const list = document.getElementById("adminOrderList");
+  const orders = window.__orders || [];
+  if(orders.length === 0){
+    list.innerHTML = `<p class="empty-state">Aucune commande pour le moment.</p>`;
+    return;
+  }
+  list.innerHTML = orders.map(o => {
+    const storeName = stores.find(s => s.id === o.store)?.city || o.store;
+    const itemsTxt = o.items.map(i => `${i.qty}× ${i.name}`).join(", ");
+    return `
+      <div class="admin-order-item">
+        <div>
+          <strong>${o.name} — ${o.phone}</strong>
+          <span>${storeName} · retrait le ${o.date} à ${o.time}</span>
+          <span>${itemsTxt}</span>
+          <span>Total : ${Number(o.total).toFixed(2)} €</span>
+        </div>
+        <select data-id="${o.id}" class="order-status">
+          <option value="en attente" ${o.status === 'en attente' ? 'selected' : ''}>En attente</option>
+          <option value="prête" ${o.status === 'prête' ? 'selected' : ''}>Prête</option>
+          <option value="récupérée" ${o.status === 'récupérée' ? 'selected' : ''}>Récupérée</option>
+        </select>
+      </div>
+    `;
+  }).join("");
+
+  list.querySelectorAll(".order-status").forEach(sel => {
+    sel.addEventListener("change", async () => {
+      await ordersCol.doc(sel.dataset.id).update({ status: sel.value });
+    });
+  });
+}
+
+/* ============ OUTILS : SIMULATEUR & DEVIS ============ */
+const RENTAL_RATES = { pompe: 35, bar: 90 }; // €/jour — à ajuster ici si besoin
+
+function initTools(){
+  document.getElementById("simCalc").addEventListener("click", () => {
+    const guests = Number(document.getElementById("simGuests").value) || 0;
+    const hours = Number(document.getElementById("simHours").value) || 0;
+    const litersPerPersonPerHour = 0.15;
+    const totalLiters = guests * hours * litersPerPersonPerHour;
+    const bottles75cl = Math.ceil(totalLiters / 0.75);
+    const futs30L = Math.ceil(totalLiters / 30);
+    document.getElementById("simResult").innerHTML =
+      `Environ ${totalLiters.toFixed(1)} L de boisson → ${bottles75cl} bouteilles (75cl) ou ${futs30L} fût(s) de 30L.`;
+  });
+
+  document.getElementById("quoteCalc").addEventListener("click", () => {
+    const type = document.getElementById("quoteType").value;
+    const days = Number(document.getElementById("quoteDays").value) || 1;
+    const total = RENTAL_RATES[type] * days;
+    const label = type === "pompe" ? "Pompe à bière" : "Bar complet";
+    document.getElementById("quoteResult").innerHTML =
+      `${label}, ${days} jour(s) : environ ${total.toFixed(2)} € (tarif indicatif, à confirmer en magasin).`;
+  });
+}
+
 function initNav(){
   const burger = document.getElementById("burgerBtn");
   const nav = document.getElementById("mainNav");
@@ -742,6 +911,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     renderMapLinks();
     renderStoreMap();
     fillStoreFilters();
+    fillOrderStoreSelect();
     renderProducts();
     renderPromotions();
     if(document.getElementById("adminPanel").classList.contains("hidden") === false){
@@ -773,12 +943,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
+  listenOrders(() => {
+    if(document.getElementById("adminPanel").classList.contains("hidden") === false){
+      renderAdminOrders();
+    }
+  });
+
   initAdminAuth();
   initTabs();
   initProductForm();
   initImportForm();
   initCategoryForm();
   initReviewForm();
+  initCart();
+  initTools();
   initNav();
 
   document.getElementById("filterStore").addEventListener("change", renderProducts);
