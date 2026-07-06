@@ -411,10 +411,12 @@ function initImportForm(){
       const name = row.nom || row.Nom || row.name || "";
       const price = row.prix || row.Prix || row.price || 0;
       const cat = row.categorie || row.catégorie || row.Catégorie || row.category || categories[0]?.name || "";
+      const cond = row.conditionnement || row.Conditionnement || row.conditioning || "Unité";
       if(!name) continue;
       await addProduct({
         name: String(name).trim(),
         price: Number(price) || 0,
+        conditionnements: [{ label: String(cond).trim() || "Unité", price: Number(price) || 0 }],
         cat: String(cat).trim(),
         stores: [defaultStore],
         promo: false, promoPrice: "", promoLabel: "",
