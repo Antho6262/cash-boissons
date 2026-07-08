@@ -1,6 +1,12 @@
 # CONTEXTE PROJET — Site Cash Boissons
 
-Dernière mise à jour : conditionnements multiples par produit (ex : Unité, Fardeau de 24), gérés dans l'espace pro (lignes ajoutables/supprimables, label + prix chacune). Sur le catalogue public, le client choisit le conditionnement et la quantité avant d'ajouter au panier.
+Dernière mise à jour : espace pro totalement invisible pour un visiteur normal — la section est en display:none par défaut et ne se révèle que si l'URL contient le hash secret #gestion-cb2026. Plus aucun lien ni point cliquable dans le site n'y mène.
+
+## Accès admin
+- URL secrète : https://antho6262.github.io/cash-boissons/#gestion-cb2026
+- Hash modifiable dans script.js, variable ADMIN_SECRET_HASH (début du DOMContentLoaded)
+- Mot de passe une fois la section visible : cashboissons62 (variable ADMIN_PASSWORD)
+- Si tu partages le lien du site normalement (sans le hash), personne ne voit ni ne peut deviner que l'espace pro existe
 
 ## Fichiers du site (tous à la racine du repo, PAS de sous-dossier images)
 - index.html
@@ -20,11 +26,7 @@ Dernière mise à jour : conditionnements multiples par produit (ex : Unité, Fa
 - Firebase Firestore, projet "cash-boissons"
 - Config déjà collée dans firebase-config.js
 - Règles Firestore ouvertes jusqu'au 31/12/2026 (à renouveler après)
-- Collections : "stores" (magasins), "products" (catalogue), "categories" (catégories produits), "reviews" (avis clients), "orders" (commandes panier/retrait)
-
-## Accès admin
-- Bouton "Espace pro" sur le site
-- Mot de passe : cashboissons62 (modifiable dans script.js, variable ADMIN_PASSWORD)
+- Collections : "stores", "products", "categories", "reviews", "orders"
 
 ## Magasins en base (7)
 1. Bruay-la-Buissière — 45 Avenue de la Libération, 62700 — 03 21 68 57 28 — bruay@cash-boissons.com — ouvert
@@ -33,11 +35,11 @@ Dernière mise à jour : conditionnements multiples par produit (ex : Unité, Fa
 4. Lambres-lez-Douai — 279 Rue Jacqueline Auriol, 59552 — 09 67 40 20 39 — lambres@cash-boissons.com — ouvert
 5. Cambrai — 2095 Avenue de Paris, 59400 — 03 27 72 15 21 — cambrai@cash-boissons.com — ouvert
 6. Avranches — Rue Victor Lemarchand, 50300 Saint-Senier-sous-Avranches — fixe non trouvé — avranches@cash-boissons.com — ouvert
-7. Noyelles-Godault — adresse à venir — noyellesgodault@cash-boissons.com — bientôt
+7. Noyelles-Godault — adresse à venir — noyellesgodault@cash-boissons.com — bientôt (statut modifiable dans l'espace pro)
 
-Tous les champs (adresse, fixe, horaires, mobile, email) éditables librement dans l'espace pro (onglet "Coordonnées magasins").
+Tous les champs (adresse, fixe, horaires, mobile, email, statut, photo) éditables librement dans l'espace pro, onglet "Coordonnées magasins".
 
-## Horaires (affichés sur les cartes magasins)
+## Horaires
 Bruay, Loos-en-Gohelle, Auchy, Lambres-lez-Douai, Cambrai : du mardi au samedi, 9h30-12h30 et 14h-19h
 Avranches et Noyelles-Godault : pas d'horaires renseignés
 
@@ -45,22 +47,28 @@ Avranches et Noyelles-Godault : pas d'horaires renseignés
 Bières, Vins, Spiritueux, Softs / Eaux, Paniers garnis
 
 ## Fonctionnalités en place
-- Hero (logo agrandi en header) + stats + grille des 7 magasins avec fixe/mobile/email/itinéraire Google Maps
-- Section "Carte" : liens itinéraire par magasin
-- Catalogue public filtrable par magasin et catégorie
-- Espace pro (protégé par mot de passe), 3 onglets :
-  - Catalogue produits : ajout/édition/suppression (nom, prix, catégorie, magasins concernés en multi-sélection avec "Tous les magasins", photo)
-  - Catégories : ajout/suppression libre de catégories, utilisées dans le formulaire produit et le filtre catalogue
-  - Coordonnées magasins : édition mobile + email par magasin
-- Section "Services" (statique) : location pompe à bière, location bar, livraison offerte dès 250€ (rayon 20km)
-- Système de promotions : case "En promotion" → deux champs facultatifs : prix promo (affiche prix barré) et/ou offre spéciale en texte libre type "3+1" (affichée en badge) ; visible dans le catalogue et dans une section "Promotions" dédiée en haut de page (masquée s'il n'y a aucune promo)
+- Hero (logo à la place du texte eyebrow) + stats + grille des 7 magasins avec photo/fixe/mobile/email/horaires/itinéraire
+- Monogramme C en puce devant les petits labels de section
+- Section "Carte" interactive (Leaflet + CartoDB, marqueurs = logo C, clustering des pins proches) + liste de liens
+- Section "Services" : location pompe à bière, location bar, livraison offerte dès 250€ (rayon 20km)
+- Simulateur "combien de bouteilles/fûts pour X invités" (calcul client, section Services)
+- Devis instantané location pompe/bar (tarifs par défaut dans script.js, variable RENTAL_RATES : pompe 35€/j, bar 90€/j)
+- Catalogue public filtrable par magasin/catégorie + barre de recherche produit
+- Produits avec conditionnements multiples (Unité, Fardeau de 24...) choisis par le client avec quantité avant ajout au panier
+- Panier + commande en ligne avec retrait en magasin (choix magasin/date/heure), collection Firestore "orders", n'ouvre plus automatiquement à l'ajout d'un produit
+- Système de promotions : prix promo et/ou offre texte libre (ex "3+1"), badge + section "Promotions" dédiée
+- Avis clients : formulaire public (étoiles + commentaire) + gestion/suppression dans l'espace pro
+- Réseaux sociaux dans le footer (liens # à remplacer par les vraies URLs)
+- Import Excel/CSV des exports Prismasoft dans l'onglet Catalogue produits (colonnes : nom, prix, catégorie, conditionnement) — produits assignés au premier magasin par défaut
+- Espace pro (5 onglets, accès invisible sauf URL secrète) : Catalogue produits, Catégories, Avis clients, Commandes, Coordonnées magasins
 - Données synchronisées en temps réel via Firestore (visible sur tous les appareils)
-- Logos jaunes intégrés (header agrandi, footer, watermark hero) — jamais sur fond blanc/noir
+- Logos jaunes intégrés partout — jamais sur fond blanc/noir
 
 ## Dépendances externes
-- Leaflet.js (via unpkg.com, CDN gratuit, pas de clé API) pour la carte interactive
-- Fond de carte CartoDB "dark_all" (gratuit, sans clé)
-- Coordonnées lat/lng des magasins : approximatives au niveau ville (pas l'adresse exacte)
+- Leaflet.js + Leaflet.markercluster (via unpkg.com, CDN gratuit, pas de clé API)
+- Fond de carte CartoDB "dark_all" (gratuit, sans clé) — OSM standard et OSM France testés mais renvoyaient des tuiles grises une fois déployés
+- SheetJS/xlsx (via unpkg.com) pour l'import Excel/CSV
+- Coordonnées lat/lng des magasins : approximatives au niveau ville
 
 ## Git pour déployer une modif
 cd "C:\Users\amalh\Desktop\Cash Boissons"

@@ -962,6 +962,12 @@ function initNav(){
 
 /* ============ INIT ============ */
 document.addEventListener("DOMContentLoaded", async () => {
+  const ADMIN_SECRET_HASH = "#gestion-cb2026"; // à ne partager qu'avec toi-même
+  if(window.location.hash === ADMIN_SECRET_HASH){
+    document.getElementById("admin").classList.remove("hidden");
+    setTimeout(() => document.getElementById("admin").scrollIntoView(), 100);
+  }
+
   await seedStoresIfEmpty();
   await seedCategoriesIfEmpty();
 
