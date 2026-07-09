@@ -929,28 +929,166 @@ function renderAdminOrders(){
 }
 
 /* ============ OUTILS : SIMULATEUR & DEVIS ============ */
-const RENTAL_RATES = { pompe: 35, bar: 90 }; // €/jour — à ajuster ici si besoin
+function stripAccents(str){
+  return String(str || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
+
+let lastQuote = null;
 
 function initTools(){
   document.getElementById("simCalc").addEventListener("click", () => {
     const guests = Number(document.getElementById("simGuests").value) || 0;
-    const hours = Number(document.getElementById("simHours").value) || 0;
-    const litersPerPersonPerHour = 0.15;
-    const totalLiters = guests * hours * litersPerPersonPerHour;
+    const beerDrinkers = guests / 2;
+    const litersPerBeerDrinker = 1.5; // estimation moyenne par buveur de bière sur l'événement
+    const totalLiters = beerDrinkers * litersPerBeerDrinker;
     const bottles75cl = Math.ceil(totalLiters / 0.75);
     const futs30L = Math.ceil(totalLiters / 30);
     document.getElementById("simResult").innerHTML =
-      `Environ ${totalLiters.toFixed(1)} L de boisson → ${bottles75cl} bouteilles (75cl) ou ${futs30L} fût(s) de 30L.`;
+      `Environ ${beerDrinkers.toFixed(0)} invité(s) buveur(s) de bière → ${totalLiters.toFixed(1)} L → ${bottles75cl} bouteilles (75cl) ou ${futs30L} fût(s) de 30L.`;
   });
 
+  fillQuoteStoreSelect();
+  renderQuoteKegList();
+  document.getElementById("quoteStore").addEventListener("change", renderQuoteKegList);
+
   document.getElementById("quoteCalc").addEventListener("click", () => {
-    const type = document.getElementById("quoteType").value;
-    const days = Number(document.getElementById("quoteDays").value) || 1;
-    const total = RENTAL_RATES[type] * days;
-    const label = type === "pompe" ? "Pompe à bière" : "Bar complet";
-    document.getElementById("quoteResult").innerHTML =
-      `${label}, ${days} jour(s) : environ ${total.toFixed(2)} € (tarif indicatif, à confirmer en magasin).`;
+    const storeId = document.getElementById("quoteStore").value;
+    const store = stores.find(s => s.id === storeId);
+    const wantsBar = document.getElementById("quoteBar").checked;
+
+    const rows = Array.from(document.querySelectorAll(".quote-keg-row"));
+    const items = rows.map(row => {
+      const qty = Number(row.querySelector(".keg-qty").value) || 0;
+      return {
+        name: row.dataset.name,
+        price: Number(row.dataset.price),
+        qty
+      };
+    }).filter(i => i.qty > 0);
+
+    if(items.length === 0){
+      document.getElementById("quoteResult").innerHTML =
+        `Sélectionnez au moins un fût de bière pour obtenir un devis.`;
+      document.getElementById("quoteDownload").disabled = true;
+      lastQuote = null;
+      return;
+    }
+
+    const total = items.reduce((sum, i) => sum + i.price * i.qty, 0);
+    lastQuote = { store, wantsBar, items, total };
+
+    const itemsHtml = items.map(i => `${i.qty}× ${i.name} — ${(i.price * i.qty).toFixed(2)} €`).join("<br>");
+    document.getElementById("quoteResult").innerHTML = `
+      ${itemsHtml}<br>
+      Location de pompe à bière : offerte<br>
+      Bar complet : ${wantsBar ? "offert, inclus" : "non sélectionné"}<br>
+      <strong>Total : ${total.toFixed(2)} €</strong> (tarif indicatif, à confirmer en magasin)
+    `;
+    document.getElementById("quoteDownload").disabled = false;
   });
+
+  document.getElementById("quoteDownload").addEventListener("click", downloadQuotePdf);
+}
+
+function fillQuoteStoreSelect(){
+  const sel = document.getElementById("quoteStore");
+  sel.innerHTML = stores.filter(s => s.status !== "soon").map(s => `<option value="${s.id}">${s.city}</option>`).join("");
+}
+
+function getBeerKegOptions(storeId){
+  const beerCats = categories.filter(c => stripAccents(c.name).includes("biere")).map(c => c.name);
+  const options = [];
+  products
+    .filter(p => beerCats.includes(p.cat))
+    .filter(p => storeId === "all" || (p.stores || []).includes(storeId))
+    .forEach(p => {
+      const conds = (p.conditionnements && p.conditionnements.length) ? p.conditionnements : [{label: "Unité", price: p.price}];
+      conds.forEach(c => {
+        if(stripAccents(c.label).includes("fut")){
+          options.push({ name: `${p.name} (${c.label})`, price: Number(c.price) || 0 });
+        }
+      });
+    });
+  return options;
+}
+
+function renderQuoteKegList(){
+  const box = document.getElementById("quoteKegList");
+  const storeId = document.getElementById("quoteStore").value;
+  const options = getBeerKegOptions(storeId);
+
+  if(options.length === 0){
+    box.innerHTML = `<p class="quote-keg-empty">Aucun fût de bière disponible pour ce magasin pour le moment.</p>`;
+    document.getElementById("quoteDownload").disabled = true;
+    lastQuote = null;
+    return;
+  }
+
+  box.innerHTML = options.map((o, i) => `
+    <div class="quote-keg-row" data-name="${o.name}" data-price="${o.price}">
+      <span class="keg-name">${o.name}</span>
+      <span class="keg-price">${o.price.toFixed(2)} €</span>
+      <input type="number" class="keg-qty" min="0" value="0">
+    </div>
+  `).join("");
+}
+
+function loadImageAsDataUrl(src){
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      canvas.getContext("2d").drawImage(img, 0, 0);
+      resolve(canvas.toDataURL("image/png"));
+    };
+    img.onerror = reject;
+    img.src = src;
+  });
+}
+
+async function downloadQuotePdf(){
+  if(!lastQuote) return;
+  const { store, wantsBar, items, total } = lastQuote;
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  try{
+    const logoData = await loadImageAsDataUrl("logo-full.png");
+    doc.addImage(logoData, "PNG", 14, 12, 50, 18);
+  }catch(e){ /* logo indisponible, on continue sans */ }
+
+  doc.setFontSize(16);
+  doc.text("Devis location pompe / bar", 14, 42);
+
+  doc.setFontSize(11);
+  let y = 52;
+  if(store){
+    doc.text(`Magasin : ${store.city}`, 14, y); y += 6;
+    doc.text(`${store.address}`, 14, y); y += 6;
+    if(store.phone){ doc.text(`Tél. : ${store.phone}`, 14, y); y += 6; }
+    if(store.email){ doc.text(`Email : ${store.email}`, 14, y); y += 6; }
+  }
+
+  y += 6;
+  doc.setFontSize(12);
+  doc.text("Fûts de bière sélectionnés :", 14, y); y += 8;
+  doc.setFontSize(11);
+  items.forEach(i => {
+    doc.text(`${i.qty}× ${i.name} — ${(i.price * i.qty).toFixed(2)} €`, 14, y);
+    y += 7;
+  });
+
+  y += 4;
+  doc.text("Location de pompe à bière : offerte", 14, y); y += 7;
+  doc.text(`Bar complet : ${wantsBar ? "offert, inclus" : "non sélectionné"}`, 14, y); y += 10;
+
+  doc.setFontSize(13);
+  doc.text(`Total : ${total.toFixed(2)} €`, 14, y);
+
+  doc.save("devis-cash-boissons.pdf");
 }
 
 function initNav(){
@@ -958,6 +1096,12 @@ function initNav(){
   const nav = document.getElementById("mainNav");
   burger.addEventListener("click", () => nav.classList.toggle("open"));
   nav.querySelectorAll("a").forEach(a => a.addEventListener("click", () => nav.classList.remove("open")));
+
+  document.querySelectorAll(".service-card-clickable").forEach(card => {
+    card.addEventListener("click", () => {
+      document.getElementById(card.dataset.scrollTo)?.scrollIntoView({behavior: "smooth", block: "center"});
+    });
+  });
 }
 
 /* ============ INIT ============ */
@@ -979,6 +1123,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     fillOrderStoreSelect();
     renderProducts();
     renderPromotions();
+    fillQuoteStoreSelect();
+    renderQuoteKegList();
     if(document.getElementById("adminPanel").classList.contains("hidden") === false){
       renderAdminStores();
     }
@@ -987,6 +1133,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   listenProducts(() => {
     renderProducts();
     renderPromotions();
+    renderQuoteKegList();
     if(document.getElementById("adminPanel").classList.contains("hidden") === false){
       renderAdminProducts();
     }
@@ -996,6 +1143,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     fillCategorySelects();
     renderProducts();
     renderPromotions();
+    renderQuoteKegList();
     if(document.getElementById("adminPanel").classList.contains("hidden") === false){
       renderAdminCategories();
     }

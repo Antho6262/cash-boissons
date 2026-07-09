@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 <script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 </head>
 <body>
 
@@ -102,12 +103,12 @@
         <h2>Nos services</h2>
       </div>
       <div class="service-grid">
-        <article class="service-card">
+        <article class="service-card service-card-clickable" data-scroll-to="quoteTool">
           <span class="service-ic">🍺</span>
           <h3>Location de pompe à bière</h3>
           <p>Pour vos fêtes, mariages et événements, en magasin.</p>
         </article>
-        <article class="service-card">
+        <article class="service-card service-card-clickable" data-scroll-to="quoteTool">
           <span class="service-ic">🍸</span>
           <h3>Location de bar</h3>
           <p>Un bar complet à louer pour toutes vos soirées.</p>
@@ -127,29 +128,34 @@
             <label>Nombre d'invités
               <input type="number" id="simGuests" min="1" value="30">
             </label>
-            <label>Durée (heures)
-              <input type="number" id="simHours" min="1" value="4">
-            </label>
           </div>
           <button type="button" id="simCalc" class="btn btn-yellow btn-small">Calculer</button>
           <div id="simResult" class="tool-result"></div>
         </div>
 
-        <div class="tool-card">
+        <div class="tool-card tool-card-wide" id="quoteTool">
           <h3>Devis location pompe / bar</h3>
-          <p class="tool-desc">Estimation instantanée du tarif de location.</p>
+          <p class="tool-desc">Location de pompe à bière offerte. Choisissez vos fûts de bière et, si besoin, le bar complet.</p>
+
           <div class="form-row">
-            <label>Matériel
-              <select id="quoteType">
-                <option value="pompe">Pompe à bière</option>
-                <option value="bar">Bar complet</option>
-              </select>
+            <label>Magasin
+              <select id="quoteStore"></select>
             </label>
-            <label>Nombre de jours
-              <input type="number" id="quoteDays" min="1" value="1">
+            <label class="quote-bar-check">
+              <span>Bar complet</span>
+              <span class="check-inline">
+                <input type="checkbox" id="quoteBar">
+                <span>Je souhaite aussi louer le bar</span>
+              </span>
             </label>
           </div>
-          <button type="button" id="quoteCalc" class="btn btn-yellow btn-small">Obtenir un devis</button>
+
+          <div id="quoteKegList" class="quote-keg-list"></div>
+
+          <div class="quote-actions">
+            <button type="button" id="quoteCalc" class="btn btn-yellow btn-small">Obtenir un devis</button>
+            <button type="button" id="quoteDownload" class="btn btn-outline-sm btn-small" disabled>Télécharger le devis</button>
+          </div>
           <div id="quoteResult" class="tool-result"></div>
         </div>
       </div>
