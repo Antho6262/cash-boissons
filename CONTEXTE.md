@@ -52,7 +52,7 @@ Bières, Vins, Spiritueux, Softs / Eaux, Paniers garnis
 - Section "Carte" interactive (Leaflet + CartoDB, marqueurs = logo C, clustering des pins proches) + liste de liens
 - Section "Services" : location pompe à bière, location bar, livraison offerte dès 250€ (rayon 20km)
 - Simulateur "combien de bouteilles/fûts pour X invités" (nombre d'invités/2 = buveurs de bière, pas de champ durée)
-- Devis instantané location pompe/bar : choix magasin + fûts de bière (conditionnement contenant "fût") + case bar optionnelle, pompe toujours offerte, total, téléchargement PDF (logo + infos magasin + produits/prix)
+- Devis instantané location pompe/bar : choix magasin + fûts de bière (conditionnement contenant "fût") + n'importe quel produit du catalogue ajouté manuellement (select + quantité) + case bar optionnelle, pompe toujours offerte, total, téléchargement PDF (logo + infos magasin + produits/prix)
 - Catalogue public filtrable par magasin/catégorie + barre de recherche produit (consultation seule, pas de commande en ligne)
 - Produits avec conditionnements multiples (Unité, Fardeau de 24...)
 - Système de promotions : prix promo et/ou offre texte libre (ex "3+1"), badge + section "Promotions" dédiée

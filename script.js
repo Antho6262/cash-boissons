@@ -777,6 +777,7 @@ function stripAccents(str){
 }
 
 let lastQuote = null;
+let quoteExtraItems = [];
 
 function initTools(){
   document.getElementById("simCalc").addEventListener("click", () => {
@@ -792,26 +793,53 @@ function initTools(){
 
   fillQuoteStoreSelect();
   renderQuoteKegList();
-  document.getElementById("quoteStore").addEventListener("change", renderQuoteKegList);
+  fillQuoteProductSelect();
+  renderQuoteExtraList();
+
+  document.getElementById("quoteStore").addEventListener("change", () => {
+    renderQuoteKegList();
+    fillQuoteProductSelect();
+    quoteExtraItems = [];
+    renderQuoteExtraList();
+  });
+
+  document.getElementById("quoteProductAdd").addEventListener("click", () => {
+    const sel = document.getElementById("quoteProductSelect");
+    if(!sel.value) return;
+    const [productId, condIndex] = sel.value.split("__");
+    const p = products.find(x => x.id === productId);
+    if(!p) return;
+    const conds = (p.conditionnements && p.conditionnements.length) ? p.conditionnements : [{label: "Unité", price: p.price}];
+    const chosen = conds[Number(condIndex)] || conds[0];
+    const isBasePromo = Number(condIndex) === 0 && p.promo && p.promoPrice;
+    const price = isBasePromo ? Number(p.promoPrice) : Number(chosen.price);
+    const qty = Math.max(1, Number(document.getElementById("quoteProductQty").value) || 1);
+    const name = `${p.name} (${chosen.label})`;
+
+    const existing = quoteExtraItems.find(i => i.name === name);
+    if(existing) existing.qty += qty;
+    else quoteExtraItems.push({ name, price, qty });
+
+    renderQuoteExtraList();
+  });
 
   document.getElementById("quoteCalc").addEventListener("click", () => {
     const storeId = document.getElementById("quoteStore").value;
     const store = stores.find(s => s.id === storeId);
     const wantsBar = document.getElementById("quoteBar").checked;
 
-    const rows = Array.from(document.querySelectorAll(".quote-keg-row"));
-    const items = rows.map(row => {
-      const qty = Number(row.querySelector(".keg-qty").value) || 0;
-      return {
-        name: row.dataset.name,
-        price: Number(row.dataset.price),
-        qty
-      };
-    }).filter(i => i.qty > 0);
+    const kegRows = Array.from(document.querySelectorAll(".quote-keg-row"));
+    const kegItems = kegRows.map(row => ({
+      name: row.dataset.name,
+      price: Number(row.dataset.price),
+      qty: Number(row.querySelector(".keg-qty")?.value) || 0
+    })).filter(i => i.qty > 0);
+
+    const items = [...kegItems, ...quoteExtraItems];
 
     if(items.length === 0){
       document.getElementById("quoteResult").innerHTML =
-        `Sélectionnez au moins un fût de bière pour obtenir un devis.`;
+        `Sélectionnez au moins un fût de bière ou un produit du catalogue pour obtenir un devis.`;
       document.getElementById("quoteDownload").disabled = true;
       lastQuote = null;
       return;
@@ -862,8 +890,6 @@ function renderQuoteKegList(){
 
   if(options.length === 0){
     box.innerHTML = `<p class="quote-keg-empty">Aucun fût de bière disponible pour ce magasin pour le moment.</p>`;
-    document.getElementById("quoteDownload").disabled = true;
-    lastQuote = null;
     return;
   }
 
@@ -874,6 +900,48 @@ function renderQuoteKegList(){
       <input type="number" class="keg-qty" min="0" value="0">
     </div>
   `).join("");
+}
+
+function fillQuoteProductSelect(){
+  const sel = document.getElementById("quoteProductSelect");
+  const storeId = document.getElementById("quoteStore").value;
+  const filtered = products.filter(p => storeId === "all" || (p.stores || []).includes(storeId));
+
+  if(filtered.length === 0){
+    sel.innerHTML = `<option value="">Aucun produit disponible pour ce magasin</option>`;
+    return;
+  }
+
+  sel.innerHTML = filtered.map(p => {
+    const conds = (p.conditionnements && p.conditionnements.length) ? p.conditionnements : [{label: "Unité", price: p.price}];
+    return conds.map((c, i) => {
+      const isBasePromo = i === 0 && p.promo && p.promoPrice;
+      const price = isBasePromo ? Number(p.promoPrice) : Number(c.price);
+      return `<option value="${p.id}__${i}">${p.name} (${c.label}) — ${price.toFixed(2)} €</option>`;
+    }).join("");
+  }).join("");
+}
+
+function renderQuoteExtraList(){
+  const box = document.getElementById("quoteExtraList");
+  if(quoteExtraItems.length === 0){
+    box.innerHTML = "";
+    return;
+  }
+  box.innerHTML = quoteExtraItems.map((i, idx) => `
+    <div class="quote-keg-row">
+      <span class="keg-name">${i.qty}× ${i.name}</span>
+      <span class="keg-price">${i.price.toFixed(2)} €</span>
+      <button type="button" class="keg-remove" data-idx="${idx}">✕</button>
+    </div>
+  `).join("");
+
+  box.querySelectorAll(".keg-remove").forEach(btn => {
+    btn.addEventListener("click", () => {
+      quoteExtraItems.splice(Number(btn.dataset.idx), 1);
+      renderQuoteExtraList();
+    });
+  });
 }
 
 function loadImageAsDataUrl(src){
@@ -967,6 +1035,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     renderPromotions();
     fillQuoteStoreSelect();
     renderQuoteKegList();
+    fillQuoteProductSelect();
     if(document.getElementById("adminPanel").classList.contains("hidden") === false){
       renderAdminStores();
     }
@@ -976,6 +1045,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     renderProducts();
     renderPromotions();
     renderQuoteKegList();
+    fillQuoteProductSelect();
     if(document.getElementById("adminPanel").classList.contains("hidden") === false){
       renderAdminProducts();
     }
@@ -986,6 +1056,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     renderProducts();
     renderPromotions();
     renderQuoteKegList();
+    fillQuoteProductSelect();
     if(document.getElementById("adminPanel").classList.contains("hidden") === false){
       renderAdminCategories();
     }

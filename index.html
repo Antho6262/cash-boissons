@@ -134,7 +134,7 @@
 
         <div class="tool-card tool-card-wide" id="quoteTool">
           <h3>Devis location pompe / bar</h3>
-          <p class="tool-desc">Location de pompe à bière offerte. Choisissez vos fûts de bière et, si besoin, le bar complet.</p>
+          <p class="tool-desc">Location de pompe à bière offerte. Choisissez vos fûts de bière, ajoutez d'autres produits du catalogue si besoin, et le bar complet si vous le souhaitez.</p>
 
           <div class="form-row">
             <label>Magasin
@@ -150,6 +150,17 @@
           </div>
 
           <div id="quoteKegList" class="quote-keg-list"></div>
+
+          <div class="quote-add-product">
+            <label class="full">Ajouter un produit du catalogue
+              <div class="quote-add-row">
+                <select id="quoteProductSelect"></select>
+                <input type="number" id="quoteProductQty" min="1" value="1">
+                <button type="button" id="quoteProductAdd" class="btn btn-outline-sm btn-small">+ Ajouter</button>
+              </div>
+            </label>
+          </div>
+          <div id="quoteExtraList" class="quote-keg-list"></div>
 
           <div class="quote-actions">
             <button type="button" id="quoteCalc" class="btn btn-yellow btn-small">Obtenir un devis</button>
