@@ -34,7 +34,6 @@
       <a href="#catalogue">Catalogue</a>
       <a href="#carte">Carte</a>
       <a href="#avis">Avis</a>
-      <button id="cartBtn" class="nav-cart">🛒 <span id="cartCount">0</span></button>
     </nav>
     <button class="burger" id="burgerBtn" aria-label="Menu">
       <span></span><span></span><span></span>
@@ -265,7 +264,6 @@
           <button class="tab-btn active" data-tab="tab-produits">Catalogue produits</button>
           <button class="tab-btn" data-tab="tab-categories">Catégories</button>
           <button class="tab-btn" data-tab="tab-avis">Avis clients</button>
-          <button class="tab-btn" data-tab="tab-commandes">Commandes</button>
           <button class="tab-btn" data-tab="tab-magasins">Coordonnées magasins</button>
         </div>
 
@@ -370,11 +368,6 @@
         </div>
 
         <!-- TAB MAGASINS -->
-        <!-- TAB COMMANDES -->
-        <div id="tab-commandes" class="admin-tab">
-          <div class="admin-order-list" id="adminOrderList"></div>
-        </div>
-
         <div id="tab-magasins" class="admin-tab">
           <p class="section-desc">Complétez les mobiles ou corrigez un e-mail si besoin — les fixes et adresses viennent des fiches officielles des magasins.</p>
           <div class="admin-store-list" id="adminStoreList"></div>
@@ -384,37 +377,6 @@
   </section>
 
 </main>
-
-<div id="cartOverlay" class="cart-overlay hidden"></div>
-<aside id="cartDrawer" class="cart-drawer hidden">
-  <div class="cart-head">
-    <h3>Mon panier</h3>
-    <button id="cartClose" class="icon-btn">✕</button>
-  </div>
-  <div id="cartItems" class="cart-items"></div>
-  <p class="cart-empty hidden" id="cartEmptyMsg">Panier vide.</p>
-
-  <form id="checkoutForm" class="cart-checkout hidden">
-    <p class="cart-total">Total : <span id="cartTotal">0.00</span> €</p>
-    <label>Magasin de retrait
-      <select id="orderStore" required></select>
-    </label>
-    <label>Date de retrait
-      <input type="date" id="orderDate" required>
-    </label>
-    <label>Heure de retrait
-      <input type="time" id="orderTime" required>
-    </label>
-    <label>Nom
-      <input type="text" id="orderName" required>
-    </label>
-    <label>Téléphone
-      <input type="tel" id="orderPhone" required>
-    </label>
-    <button type="submit" class="btn btn-yellow">Valider la commande</button>
-  </form>
-  <p class="cart-confirm hidden" id="cartConfirm">Commande envoyée ! Le magasin vous contactera pour confirmer.</p>
-</aside>
 
 <footer class="footer">
   <div class="wrap footer-inner">
